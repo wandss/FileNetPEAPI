@@ -173,25 +173,29 @@ DocumentforReview
 - ICN_Instructions
 - FinalReview
 ```
-Are data fields availabe for the workflow. It doesn't mean that all of this data fields must be provided. It will depends on how the worflow was written, but this shows which data fields exists on this particular Workflow.
+*These are data fields availabe for the workflow. It doesn't mean that all of this data fields must be provided. It will depends on how the worflow was written, but this shows which data fields exists on this particular Workflow.*
+
 ```
 - Approvers
-This is a group to be populated with one or many users.
 ```
+*This is a group to be populated with one or many users.*
 ```
 - DocumentforReview
 ```
-Finally this is the field to be used when attaching a document.
+*Finally, this is the field to be used when attaching a document.*
 
-Samples to starting this workflow we could be:
+####Samples to starting this workflow we could be:
+#####Sending to one user:
 ```python
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='destinated_user' )
 ```
-*Only informed a destination user.*
-- To send for more than one user wirte user_names separated by ', ' comma and space like:
-      *- Approvers = 'user1, user2, ..., userX' *      
-      ```python
-      launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='destinated_user1, destinated_user2' )
-      ```
+*Only informed one destination user.*
+#####Sending to more users:
+```python
+launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
+                            Approvers='destinated_user1, destinated_user2' )
+```
+*To send for more than one user, write user_names separated by ', ' comma and space like:
+**Approvers = 'user1, user2, ..., userX'***
 
 

@@ -9,9 +9,9 @@ Obviously knowing Python will help.
 This API requires Requests, so install it before.
 
 ###Running the API:
-'''python
+```python
 from pythonPERest import PEClient, WorkBasket
-'''
+```
 ###To create a “connection”:
 >>> client = PECLient(‘server_name’, ‘server_port’, ‘user’, ’passwd’)
 

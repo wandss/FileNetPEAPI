@@ -13,12 +13,12 @@ This API requires [Requests](https://github.com/kennethreitz/requests) by Kennet
 ```python
 from pythonPERest import PEClient, WorkBasket
 ```
-###To create a “connection”:
+###To create a "connection":
 ```python
-client = PECLient(‘server_name’, ‘server_port’, ‘user’, ’passwd’)
+client = PECLient('server_name', 'server_port', 'user', 'passwd')
 ```
 **Sample:**
-*client = PEClient(‘content_engine’, ‘9080’, ‘p8admin’, ’password’)*
+*client = PEClient('content_engine', '9080', 'p8admin', 'password')*
 With This client instance of PEClient  you can check:
 
 ####Available App Spaces:
@@ -103,7 +103,7 @@ wb. showAttachmentsInfo (task)
 ###Reassigning a task:
 *To reassign a task, a destination user must be informed:*
 ```python
-wb.reassignTask(task, ‘new_user’)
+wb.reassignTask(task, 'new_user')
 ```
 *It is also possible to add a comment like:*
 ```python
@@ -111,7 +111,7 @@ wb.reassignTask(task, 'new_user', 'Hello. This document needs your attention')
 ```
 *In case you want to add a comment but not reassign a task, issue:*
 ```python
-wb.saveAndUnlockTask(task, ‘Check this out later’)
+wb.saveAndUnlockTask(task, 'Check this out later')
 ```
 *When interacting with a task it will automatically be locked, so you might need to unlocks it by issuing:*
 ```python

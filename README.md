@@ -198,7 +198,7 @@ launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
 *To send for more than one user, write user_names separated by ', ' comma and space like:
 **Approvers = 'user1, user2, ..., userX'***
 
-####Setting users and datafield:
+####Setting users and values for data field:
 ```python
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2',
@@ -210,6 +210,16 @@ launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
 In the above example "ICN_AllowReassign" was created in workflow as a boolean type, so here we must matchs the same type by passing
 True and not 'True'***
 
+####Setting users, values for data field and attaching a document:
+```python
+launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
+                            Approvers='destinated_user1, destinated_user2', ICN_Instructions='Here some instructions',
+                            ICN_AllowReassign=True, DocumentforReview='{Filenet's Document ID}',
+                            object_store='ObjectStoreName', subject="New Document for review"
+                            )
+```
+***Only documents available in FileNet repository can be attached, therefore the ID for this document must be passed here. It is also required to pass the object_store key with the desired 'ObjectStoreName'
+It is also possible to set a subject for this Workflow by passing the parameter: subject with any string you like as value***
 
 
 

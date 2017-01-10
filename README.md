@@ -219,8 +219,16 @@ launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             )
 ```
 ***Only documents available in FileNet repository can be attached, therefore the ID for this document must be passed here. It is also required to pass the object_store key with the desired 'ObjectStoreName'
-It is also possible to set a subject for this Workflow by passing the parameter: subject with any string you like as value***
+It is also possible to set a subject for this Workflow by passing the parameter: subject with any string you like as value.***
 
+As shown in this part above, starting (lauching) a workflow relies on many variables. Therefore is important to know the workflow that's been started.
 
+###Commum atributes for any workflows are:
+- wf_name
+- subject
+Any other attribute depends for the workflow.
 
+##Notes on this program:
+Obviously there are many things to improve at this API (and maybe some bugs) yet, at the state it is now, I do believe it can be shared since I've used it to implement at least trhee other applications and they are working just fine.
 
+I do hope this API can be useful for those who intends to develop FileNet application.

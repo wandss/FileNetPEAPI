@@ -172,7 +172,7 @@ DocumentforReview
 - ICN_Instructions
 - FinalReview
 
-Are data fields availabe for the workflow. It doesn't mean that all of this data fields must be provided. It will depends on how the worflow was written, but this gives shows which data fields exists on this particular Workflow.
+Are data fields availabe for the workflow. It doesn't mean that all of this data fields must be provided. It will depends on how the worflow was written, but this shows which data fields exists on this particular Workflow.
 
 - Approvers
 This is a group to be populated with one or many users.

@@ -242,6 +242,6 @@ Obviously there are many things to improve at this API (and probably some bugs) 
 
 I do hope this API can be useful for those who intends to develop FileNet application.
 
-##WTF (Whats the Future):
+##WTF (What's the Future):
 - Improve this code
 - Maybe publicate it in PyPI

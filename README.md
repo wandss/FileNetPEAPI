@@ -184,18 +184,33 @@ DocumentforReview
 ```
 *Finally, this is the field to be used when attaching a document.*
 
-####Samples to starting this workflow we could be:
-#####Sending to one user:
+###Samples to starting this workflow we could be:
+####Sending to one user:
 ```python
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='destinated_user' )
 ```
 *Only informed one destination user.*
-#####Sending to more users:
+####Sending to more users:
 ```python
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2' )
 ```
 *To send for more than one user, write user_names separated by ', ' comma and space like:
 **Approvers = 'user1, user2, ..., userX'***
+
+####Setting users and datafield:
+```python
+launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
+                            Approvers='destinated_user1, destinated_user2',
+                            ICN_Instructions='Here some instructions',
+                            ICN_AllowReassign=True                            
+                            )
+```
+***When using Data Fields, the type passed for the value here must match the type written in workflow.
+In the above example "ICN_AllowReassign" was created in workflow as a boolean type, so here we must matchs the same type by passing
+True and not 'True'***
+
+
+
 
 

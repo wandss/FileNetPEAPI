@@ -17,7 +17,7 @@ from pythonPERest import PEClient, WorkBasket
 client = PECLient(‘server_name’, ‘server_port’, ‘user’, ’passwd’)
 ```
 Sample:
-client = PEClient(‘content_engine’, ‘9080’, ‘p8admin’, ’password’)
+*client = PEClient(‘content_engine’, ‘9080’, ‘p8admin’, ’password’)*
 With This client instance of PEClient  you can check:
 
 ####Available App Spaces:
@@ -30,34 +30,31 @@ Prints a list with queue_names.
 ```python
 client.queue_names
 ```
-
 ####Available Roles:
 ```python
 client.roles
 ```
-
 ####Available Workflow:
 ```python
 client.workflow_classes.keys()
 ```
-
 ###Now create a Workbasket object:
 To do so, is required to pass an instance from PEClient and a queue name.
 The available queues can be obtained as shown above.
 If no queue_name is passed, the program will inspect the ‘Inbox’ for the connected user.
->>> wb = WorkBasket(client)
-
-With an WorkBasket object is possible to retrieve:
+```python
+wb = WorkBasket(client)
+```
+###With a WorkBasket object is possible to retrieve:
 Information from a workbasket:
-Prints the url for the workbasket that is been used.
+*Prints the url for the workbasket that is been used.*
 ```python
 wb.url
 ```
-
-Prints all the tasks available in the Queue for the given workbasket:
+*Prints all the tasks available in the Queue for the given workbasket:*
 ```python
 wb.getElementsCount()
-
+```
 To get all the tasks from this queue:
 Here a list with tasks will be returned.
 Each task inside this list is a python dictionary object.
@@ -70,17 +67,15 @@ Reassign the task to other user, add a comment, lock it so other users can’t i
 
 ####Showing information from tasks:
 
-#####You can iterate in tasks:
+#####You can iterate tasks:
 ```python
 for task in tasks:      
       wb.showTaskInfo(task)
-```      
-      
+```            
 ####For working with a specific task:
 ```python
 task = tasks[0]
 ```
-
 Showing Information for a task:
 ```python
 wb.showTaskInto(task)

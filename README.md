@@ -1,5 +1,6 @@
 # FileNetPEAPI
 A Python API for using FileNet Process Engine (Case Foundation)
+Package name: fnetpepAPI
 
 This document explains how to use this API.
 Is important to have some knowledge on some Process Engine concepts like:
@@ -11,7 +12,7 @@ This API requires [Requests](https://github.com/kennethreitz/requests) by Kennet
 
 ###Running the API:
 ```python
-from pythonPERest import PEClient, WorkBasket
+from pepa import PEClient, WorkBasket
 ```
 ###To create a "connection":
 ```python

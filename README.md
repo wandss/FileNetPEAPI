@@ -6,7 +6,7 @@ Is important to have some knowledge on some Process Engine concepts like Queues,
 
 Obviously knowing Python will help.
 
-This API requires Requests, so install it before.
+This API requires [Requests](https://github.com/kennethreitz/requests) by Kenneth Reitz, so install it before.
 
 ###Running the API:
 ```python
@@ -16,7 +16,6 @@ from pythonPERest import PEClient, WorkBasket
 ```python
 client = PECLient(‘server_name’, ‘server_port’, ‘user’, ’passwd’)
 ```
-
 Sample:
 client = PEClient(‘content_engine’, ‘9080’, ‘p8admin’, ’password’)
 With This client instance of PEClient  you can check:

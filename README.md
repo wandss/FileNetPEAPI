@@ -145,9 +145,17 @@ Usually IBM packages two basic Document Approval sample workflows:
 ###Let's use one of them as example:
 *When running:*
 ```python
-wb.startWorkflow(wf_name='ICNSequentialDocumentApproval')
+launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval')
 ```
-*The result would be*:
+Aside printing the information, the above command, will return a dictionary to 'launched' variable 
+containing the same printed information.
+You can check this by issuing:
+```python
+for k, v in launched.items():
+	print (k)
+	print ('\n').join(v)+'\n'
+```
+*The printed result is*:
 ```
 To Create this Workflow, you'll probably need to provide below data:
 ICN_TeamspaceId
@@ -213,7 +221,8 @@ True and not 'True'***
 ####Setting users, values for data field and attaching a document:
 ```python
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
-                            Approvers='destinated_user1, destinated_user2', ICN_Instructions='Here some instructions',
+                            Approvers='destinated_user1, destinated_user2', 
+                            ICN_Instructions='Here some instructions',
                             ICN_AllowReassign=True, DocumentforReview='{Filenet's Document ID}',
                             object_store='ObjectStoreName', subject="New Document for review"
                             )
@@ -229,6 +238,10 @@ As shown in this part above, starting (lauching) a workflow relies on many varia
 Any other attribute depends for the workflow.
 
 ##Notes on this program:
-Obviously there are many things to improve at this API (and maybe some bugs) yet, at the state it is now, I do believe it can be shared since I've used it to implement at least trhee other applications and they are working just fine.
+Obviously there are many things to improve at this API (and probably some bugs) yet, at the state it is now, I do believe it can be shared, since I've already used it to implement at least other trhee different applications and they are working just fine.
 
 I do hope this API can be useful for those who intends to develop FileNet application.
+
+##WTF (Whats the Future):
+- Improve this code
+- Maybe publicate it in PyPI

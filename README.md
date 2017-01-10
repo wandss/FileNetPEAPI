@@ -147,8 +147,8 @@ Usually IBM packages two basic Document Approval sample workflows:
 wb.startWorkflow(wf_name='ICNSequentialDocumentApproval')
 ```
 *The result would be*:
->
-To Create this Workflow, you'll probably need to providebelow data:
+```
+To Create this Workflow, you'll probably need to provide below data:
 ICN_TeamspaceId
 ICN_WFDeadlineDate
 ICN_AllowReassign
@@ -162,6 +162,20 @@ Approvers
 Available Attachment Fields:
 DocumentforReview
 
->
+```
+**Explaining above info:**
+- ICN_TeamspaceId
+- ICN_WFDeadlineDate
+- ICN_AllowReassign
+- ReturnToSender
+- ICN_Instructions
+- FinalReview
 
+Are data fields availabe for the workflow. It doesn't mean that all of this data fields must be provided. It will depends on how the worflow was written, but this gives shows which data fields exists on this particular Workflow.
+
+- Approvers
+This is a group to be populated with one or many users.
+
+- DocumentforReview
+Finally this is the field to be used when attaching a document.
 

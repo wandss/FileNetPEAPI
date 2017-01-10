@@ -118,4 +118,50 @@ wb.saveAndUnlockTask(task, 'Check this out later')
 wb.abort(task)
 ```
 ##Starting (Launching) a new Workflow:
+Starting (launching) a worflow could be a little complex since each workflow is created with specific needs and configuration.
+Is possible to have a workflow that needs to set a destination user and others that already has a specified destinated user.
+Sometimes, when creating a workflow you might have to determine some datafields to be filled in at launch step or having the option to attach documents. Many possibilities here.
+
+So, since it Workflow has its needs, the first thing is to understand what are the needs from that workflow, to do this run:
+```python
+launchstep = wb.startWorkflow(wf_name = 'WorkFlowName')
+```
+*You must run this with the wf_name property, not doing so, will return the message:
+**"There's no wf_name key on dictionary"***
+To find out Workflow names issue (as mentioned above):
+```python
+client.workflow_classes.keys()
+```
+After properly issuing the above command, depending on the workflow,the options to be printed out can be:
+- Data Fields Names
+- Workflow groups Names
+- Attachment Name Field
+
+Usually IBM packages two basic Document Approval sample workflows:
+- ICNSequentialDocumentApproval,
+- ICNParallelDocumentApproval
+
+###Let's use one of them as example:
+*When running:*
+```python
+wb.startWorkflow(wf_name='ICNSequentialDocumentApproval')
+```
+*The result would be*:
+>
+To Create this Workflow, you'll probably need to providebelow data:
+ICN_TeamspaceId
+ICN_WFDeadlineDate
+ICN_AllowReassign
+ReturnToSender
+ICN_Instructions
+FinalReview
+
+Groups to be populated with users:
+Approvers
+
+Available Attachment Fields:
+DocumentforReview
+
+>
+
 

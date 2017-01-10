@@ -90,15 +90,15 @@ task = tasks[0]
 ```
 *Showing Information for a task:*
 ```python
-wb.showTaskInto(task)
+wb.showTaskInfo(task)
 ```
 *Showing Comments for a task:*
 ```python
-wb. showComment (task)
+wb.showComment (task)
 ```
 *Showing AttachmentsInfo for a task:*
 ```python
-wb. showAttachmentsInfo (task)
+wb.showAttachmentsInfo (task)
 ```
 ###Reassigning a task:
 *To reassign a task, a destination user must be informed:*
@@ -117,4 +117,5 @@ wb.saveAndUnlockTask(task, 'Check this out later')
 ```python
 wb.abort(task)
 ```
+##Starting (Launching) a new Workflow:
 

@@ -20,7 +20,7 @@ client = PEClient('server_name', 'server_port', 'user', 'passwd')
 ```
 **Sample:**
 *client = PEClient('content_engine', '9080', 'p8admin', 'password')*
-With This client instance of PEClient  you can check:
+With this client instance of PEClient  you can check:
 
 ####Available App Spaces:
 *Prints appspace names*
@@ -53,13 +53,13 @@ or
 ```python
 wb = WorkBasket(client, 'Queue_name')
 ```
-###With a WorkBasket object is possible to retrieve information from a workbasket:
+###With a WorkBasket object is possible to retrieve information from a workbasket and manage tasks:
 
 *Prints the url for the workbasket that is been used.*
 ```python
 wb.url
 ```
-*Prints all the tasks available in the Queue for the given workbasket:*
+*Prints the amount of available tasks in the Queue for the given workbasket:*
 ```python
 wb.getElementsCount()
 ```
@@ -71,13 +71,13 @@ tasks = wb.getTasks()
 Each task inside this list, is a python dictionary object.*
 
 ###Tasks are the final objects from a Queue. Is possible to interact with them and do the following actions:
-- Reassign the task to other user, 
-- Add a comment, 
-- Locks it, so other users can’t interact while you're working with it, 
+- Reassign a task to other user, 
+- Add comment to a task, 
+- Locks a task, so other users can’t interact with it while you're working, 
 - Unlocks the task without saving any modifications, 
 - Show comments, 
 - Show information from a task, 
-- Show information from documents attached to a the task.
+- Show information from documents attached to the task.
 
 ####Showing information from tasks:
 *You can iterate tasks:*
@@ -95,20 +95,20 @@ wb.showTaskInfo(task)
 ```
 *Showing Comments for a task:*
 ```python
-wb.showComment (task)
+wb.showComment(task)
 ```
 *Showing AttachmentsInfo for a task:*
 ```python
-wb.showAttachmentsInfo (task)
+wb.showAttachmentsInfo(task)
 ```
 ###Reassigning a task:
 *To reassign a task, a destination user must be informed:*
 ```python
 wb.reassignTask(task, 'new_user')
 ```
-*It is also possible to add a comment like:*
+*It is also possible to add a comment, like:*
 ```python
-wb.reassignTask(task, 'new_user', 'Hello. This document needs your attention')
+wb.reassignTask(task, 'new_user', 'Hello. The attached document, needs your attention')
 ```
 *In case you want to add a comment but not reassign a task, issue:*
 ```python
@@ -119,30 +119,31 @@ wb.saveAndUnlockTask(task, 'Check this out later')
 wb.abort(task)
 ```
 ##Starting (Launching) a new Workflow:
-Starting (launching) a worflow could be a little complex since each workflow is created with specific needs and configuration.
-Is possible to have a workflow that needs to set a destination user and others that already has a specified destinated user.
-Sometimes, when creating a workflow you might have to determine some datafields to be filled in at launch step or having the option to attach documents. Many possibilities here.
+Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and configuration.
+It is possible to have a workflow that needs a destination user to be set and others that already has a specified destinated user.
+Sometimes, when creating a workflow, there might be some datafields to be filled in or documents to be attached at launch step.
+There are many possibilities here and all of them depends the workflow itself.
 
-So, since it Workflow has its needs, the first thing is to understand what are the needs from that workflow, to do this run:
+So, since each Workflow has its needs, the first thing is to understand what are the needs from that workflow, to do this run:
 ```python
 launchstep = wb.startWorkflow(wf_name = 'WorkFlowName')
 ```
 *You must run this with the wf_name property, not doing so, will return the message:
 **"There's no wf_name key on dictionary"***
-To find out Workflow names issue (as mentioned above):
+To find out Workflow names, issue (as mentioned above):
 ```python
 client.workflow_classes.keys()
 ```
-After properly issuing the above command, depending on the workflow,the options to be printed out can be:
+After properly issuing the *"wb.startWorkflow(wf_name = 'WorkFlowName')* as shown earlier, depending on the workflow's configuration,the options to be printed out can be:
 - Data Fields Names
 - Workflow groups Names
 - Attachment Name Field
 
-Usually IBM packages two basic Document Approval sample workflows:
+Usually IBM packages two basic "Document Approval" sample workflows within FileNet:
 - ICNSequentialDocumentApproval,
 - ICNParallelDocumentApproval
 
-###Let's use one of them as example:
+##Practical example:
 *When running:*
 ```python
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval')
@@ -170,9 +171,9 @@ Approvers
 
 Available Attachment Fields:
 DocumentforReview
-
 ```
 **Explaining above info:**
+
 ```
 - ICN_TeamspaceId
 - ICN_WFDeadlineDate
@@ -181,8 +182,7 @@ DocumentforReview
 - ICN_Instructions
 - FinalReview
 ```
-*These are data fields availabe for the workflow. It doesn't mean that all of this data fields must be provided. It will depends on how the worflow was written, but this shows which data fields exists on this particular Workflow.*
-
+*These are data fields availabe for the workflow. It doesn't mean that all of this data fields must be filled in. It will depends on how the worflow was written, but this shows which data fields exists on this particular Workflow.*
 ```
 - Approvers
 ```
@@ -192,7 +192,7 @@ DocumentforReview
 ```
 *Finally, this is the field to be used when attaching a document.*
 
-###Samples to starting this workflow we could be:
+###Samples for starting this specific workflow:
 ####Sending to one user:
 ```python
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='destinated_user' )
@@ -215,8 +215,7 @@ launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             )
 ```
 ***When using Data Fields, the type passed for the value here must match the type written in workflow.
-In the above example "ICN_AllowReassign" was created in workflow as a boolean type, so here we must matchs the same type by passing
-True and not 'True'***
+In the above example "ICN_AllowReassign" was created in workflow as a boolean type, so here we must match the same type by passing True (boolean type) and not 'True'(string type)***
 
 ####Setting users, values for data field and attaching a document:
 ```python
@@ -228,20 +227,21 @@ launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             )
 ```
 ***Only documents available in FileNet repository can be attached, therefore the ID for this document must be passed here. It is also required to pass the object_store key with the desired 'ObjectStoreName'
-It is also possible to set a subject for this Workflow by passing the parameter: subject with any string you like as value.***
+It is also possible to set a subject for this Workflow by passing the parameter subject, with any string you like as value.***
 
-As shown in this part above, starting (lauching) a workflow relies on many variables. Therefore is important to know the workflow that's been started.
+As shown rigth above, starting (lauching) a workflow relies on many variables. Therefore is important to know the workflow that's been started.
 
 ###Commum atributes for any workflows are:
 - wf_name
 - subject
-Any other attribute depends for the workflow.
+Any other attribute depends on the Workflow's settings.
 
 ##Notes on this program:
 Obviously there are many things to improve at this API (and probably some bugs) yet, at the state it is now, I do believe it can be shared, since I've already used it to implement at least other trhee different applications and they are working just fine.
 
-I do hope this API can be useful for those who intends to develop FileNet application.
+I do hope this API can be useful for those who intends to develop FileNet application as it has been to myself.
 
-##WTF (What's the Future):
-- Improve this code
-- Maybe publicate it in PyPI
+This API aims the "Process Engine" only. To expand it's usage and use Python to access "Content Engine" I do recommend the Open CMIS API.
+Open CMIS is an amazing API for accessing and controlling objects inside a CMIS Compliant repository.
+It is distributed and maintenned by Apache Chemistry and written ....
+

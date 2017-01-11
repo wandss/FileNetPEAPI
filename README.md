@@ -134,7 +134,7 @@ To find out Workflow names, issue (as mentioned above):
 ```python
 client.workflow_classes.keys()
 ```
-After properly issuing the *"wb.startWorkflow(wf_name = 'WorkFlowName')* as shown earlier, depending on the workflow's configuration,the options to be printed out can be:
+After properly issuing the *"wb.startWorkflow(wf_name = 'WorkFlowName')* as shown earlier, depending on the workflow's settings,the options to be printed out can be:
 - Data Fields Names
 - Workflow groups Names
 - Attachment Name Field

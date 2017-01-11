@@ -9,8 +9,11 @@ Is important to have some knowledge on some Process Engine concepts like:
 Obviously knowing **[Python](https://www.python.org/)** will help.
 
 This API requires [Requests](https://github.com/kennethreitz/requests) by Kenneth Reitz, so install it before.
+##Installing the fnetpepAPI:
+Download this package or run
+git clone 
 
-###Running the API:
+##Running the API:
 ```python
 from fnetpepAPI import PEClient, WorkBasket
 ```

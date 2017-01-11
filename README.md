@@ -45,7 +45,7 @@ print (client.workflow_classes.keys())
 ###Now, create a Workbasket object:
 To do so, is required to pass an **instance from PEClient** and a **queue name**.
 The available queues can be obtained as shown above.
-*If no queue_name is passed, the program will inspect the **‘Inbox’** for the connected user.*
+*If no queue_name is passed, the program will inspect the **'Inbox'** for the connected user.*
 ```python
 wb = WorkBasket(client)
 ```

@@ -242,7 +242,14 @@ Obviously there are many things to improve at this API (and probably some bugs) 
 
 I do hope this API can be useful for those who intends to develop FileNet application as it has been to myself.
 
-This API aims the "Process Engine" only. To expand it's usage and use Python to access "Content Engine" as well, I do recommend the Open CMIS API.
+This API aims the "Process Engine" only. To expand it's usage and use Python to access "Content Engine" as well, I do recommend the **Open CMIS API**.
+
 Open CMIS is an amazing API for accessing and controlling objects inside a CMIS Compliant repository.
 It is distributed and maintenned by Apache, [Apache Chemistry](http://chemistry.apache.org/python/cmislib.html) and written by Mr. [Jeff Pots](https://github.com/jpotts)
-Open CMIS works with most of CMIS Compliant Repository, therefore is possible to use the it not only with FileNet but also with Alfresco, Open TEXT, Share Point and many others.
+
+Open CMIS works with most of CMIS Compliant Repository, therefore is possible to use it not only with FileNet, but also with Alfresco, Open TEXT, Share Point and many others.
+
+[Python documentation for cmislib](https://chemistry.apache.org/python/docs/), the Open CMIS for Python package.
+
+To use Open CMIS with FileNet is required to have IBM CMIS installed.
+There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/developerworks/library/x-cmis1/)

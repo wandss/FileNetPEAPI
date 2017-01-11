@@ -222,7 +222,7 @@ In the above example "ICN_AllowReassign" was created in workflow as a boolean ty
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2', 
                             ICN_Instructions='Here some instructions',
-                            ICN_AllowReassign=True, DocumentforReview='{Filenet's Document ID}',
+                            ICN_AllowReassign=True, DocumentforReview="{Filenet's Document ID}",
                             object_store='ObjectStoreName', subject="New Document for review"
                             )
 ```

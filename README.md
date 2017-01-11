@@ -13,10 +13,16 @@ This API requires [Requests](https://github.com/kennethreitz/requests) by Kennet
 Download this package or run:
 ```shell
 git clone https://github.com/wandss/FileNetPEAPI.git
-```` 
+```
+Inside the create directory run:
+```shell
+python setup.py build 
+python setup.py install
+```
+
 ##Running the API:
 ```python
-from fnetpepAPI import PEClient, WorkBasket
+from fnetpepAPI.fnetpepAPI import PEClient, WorkBasket
 ```
 ###To create a "connection":
 ```python

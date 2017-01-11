@@ -19,7 +19,7 @@ from fnetpepAPI import PEClient, WorkBasket
 client = PEClient('server_name', 'server_port', 'user', 'passwd')
 ```
 **Sample:**
-*client = PEClient('content_engine', '9080', 'p8admin', 'password')*
+*client = PEClient('content_engine_server_address', '9080', 'p8admin', 'password')*
 With this client instance of PEClient  you can check:
 
 ####Available App Spaces:

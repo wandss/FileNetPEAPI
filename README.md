@@ -10,9 +10,10 @@ Obviously knowing **[Python](https://www.python.org/)** will help.
 
 This API requires [Requests](https://github.com/kennethreitz/requests) by Kenneth Reitz, so install it before.
 ##Installing the fnetpepAPI:
-Download this package or run
-git clone 
-
+Download this package or run:
+```shell
+git clone https://github.com/wandss/FileNetPEAPI.git
+```` 
 ##Running the API:
 ```python
 from fnetpepAPI import PEClient, WorkBasket

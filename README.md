@@ -138,8 +138,8 @@ So, since each Workflow has its needs, the first thing is to understand what are
 ```python
 launchstep = wb.startWorkflow(wf_name = 'WorkFlowName')
 ```
-*You must run this with the wf_name property, not doing so, will return the message:
-**"There's no wf_name key on dictionary"***
+*You must run this with the wf_name property. Not doing so, will return the message:*
+**"There's no wf_name key on dictionary"**
 To find out Workflow names, issue (as mentioned above):
 ```python
 client.workflow_classes.keys()

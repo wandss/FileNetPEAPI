@@ -89,6 +89,7 @@ class WorkBasket(object):
     """
     
     def __init__(self, client, queue_name='Inbox'):
+        self.client = client
         self.apps = client.apps
         self.url = None
         self.queue = queue_name
@@ -98,23 +99,23 @@ class WorkBasket(object):
     def __getWorkBasketProps(self):
         """Returns properties from a work basket to a class variable.
         """
-        properties = requests.get(client.baseurl+'queues/'
+        properties = requests.get(self.client.baseurl+'queues/'
                                   + self.queue
                                   +'/workbaskets/'
                                   +self.queue
                                   +'/columns',
-                                  auth = client.cred)
+                                  auth = self.client.cred)
         return properties.json()
         
         
     def __getQueueFromRole(self):
         """Returns Queues from a Role.
         """        
-        self.work_basket = requests.get(client.baseurl+'queues/'
+        self.work_basket = requests.get(self.client.baseurl+'queues/'
                                         + self.queue
                                         +'/workbaskets/'
                                         +self.queue,
-                                        auth = client.cred)
+                                        auth = self.client.cred)
         self.url = self.work_basket.url
         self.queue_url = self.work_basket.json()['queueElements']
         return self.work_basket.json()
@@ -126,7 +127,7 @@ class WorkBasket(object):
         """
         
         count = requests.get(self.url+'/queueelements/count',
-                             auth=client.cred)
+                             auth=self.client.cred)
         return count.json()['count']
 
     def getTasks(self):
@@ -135,8 +136,8 @@ class WorkBasket(object):
         If there aren't tasks, 'None' will be returned.
         """
         
-        work_items = requests.get(client.baseurl+self.queue_url,
-                                  auth = client.cred)
+        work_items = requests.get(self.client.baseurl + self.queue_url,
+                                  auth = self.client.cred)
         if not work_items.json():
             print ("'%s' queue is empty!"%self.queue)
             return None
@@ -144,9 +145,9 @@ class WorkBasket(object):
         return tasks
 
     def getMilestones(self, task):
-        milestone = requests.get(client.baseurl
+        milestone = requests.get(self.client.baseurl
                                  + task['milestones'],
-                                 auth=client.cred)
+                                 auth = self.client.cred)
         return milestone.json()
 
     def lockTask(self, task):
@@ -157,13 +158,13 @@ class WorkBasket(object):
         >>> wb.lockTask(task)
         """
         
-        locked = requests.get(client.baseurl
+        locked = requests.get(self.client.baseurl
                               +task['stepElement'],
-                              auth = client.cred)
+                              auth = self.client.cred)
         eTag = locked.headers['ETag']
-        locked = requests.put(client.baseurl
+        locked = requests.put(self.client.baseurl
                               + task['stepElement'],
-                              auth = client.cred,
+                              auth = self.client.cred,
                               params={'action':'lock',
                                       'If-Match':eTag}
                               )        
@@ -180,21 +181,21 @@ class WorkBasket(object):
         """
         
         etag = task['ETag']
-        stepEl =  requests.get(client.baseurl
+        stepEl =  requests.get(self.client.baseurl
                                +task['stepElement'],
-                               auth = client.cred)
+                               auth = self.client.cred)
         if comment:
             updatedJson = stepEl.json()
             updatedJson['systemProperties']['comment'] = comment
             self.lockTask(task)
-            unlocked = requests.put(stepEl.url, auth = client.cred,
+            unlocked = requests.put(stepEl.url, auth = self.client.cred,
                                     params = {'action':'saveAndUnlock',
                                               'If-Match':etag},
                                     json = updatedJson)            
         else: 
-            unlocked = requests.put(client.baseurl
+            unlocked = requests.put(self.client.baseurl
                                     + task['stepElement'],
-                                    auth = client.cred,
+                                    auth = self.client.cred,
                                     params={'action':'saveAndUnlock',
                                             'If-Match':etag})
     
@@ -214,13 +215,13 @@ class WorkBasket(object):
             self.lockTask(task)
             self.saveAndUnlockTask(task, comment)
             
-        task = requests.get(client.baseurl
+        task = requests.get(self.client.baseurl
                             + task['stepElement'],
-                            auth = client.cred)
+                            auth = self.client.cred)
         etag = task.headers['ETag']
 
         if (task.json()['systemProperties']['canReassign']):
-            reassigned = requests.put(task.url, auth=client.cred,
+            reassigned = requests.put(task.url, auth=self.client.cred,
                                    params={'action':'reassign',
                                            'participant':destination,
                                            'If-Match':etag})                                
@@ -235,9 +236,9 @@ class WorkBasket(object):
         >>> wb.showComment(task)
         """
         
-        stepelements = requests.get(client.baseurl
+        stepelements = requests.get(self.client.baseurl
                                     + task['stepElement'],
-                                    auth = client.cred)
+                                    auth = self.client.cred)
         comment = stepelements.json()['systemProperties']['comment']
 
         if comment:
@@ -251,8 +252,8 @@ class WorkBasket(object):
         >>> wb.showTaskinfo(task)
         """
         
-        task = requests.get(client.baseurl+task['stepElement'],
-                            auth=client.cred).json()
+        task = requests.get(self.client.baseurl+task['stepElement'],
+                            auth=self.client.cred).json()
         self.__printDictionary(task)                    
         
     def endTask(self, task):
@@ -264,8 +265,8 @@ class WorkBasket(object):
         
         lock = self.lockTask(task)
         etag = task['ETag']       
-        dispatched = requests.put(client.baseurl + task['stepElement'],
-                                  auth = client.cred,
+        dispatched = requests.put(self.client.baseurl + task['stepElement'],
+                                  auth = self.client.cred,
                                   params={'action':'dispatch','If-Match':etag})
     def abort(self, task):
         
@@ -275,8 +276,8 @@ class WorkBasket(object):
         """
         
         eTag = task['ETag']
-        locked = requests.put(client.baseurl+task['stepElement'],
-                              auth=client.cred,
+        locked = requests.put(self.client.baseurl+task['stepElement'],
+                              auth=self.client.cred,
                               params={'action':'abort',
                                       'If-Match': eTag})
     def showAttachmentsInfo(self, task):
@@ -285,8 +286,8 @@ class WorkBasket(object):
         attached to the Workflow.
         """
         
-        task = requests.get(client.baseurl + task['stepElement'],
-                            auth = client.cred).json()
+        task = requests.get(self.client.baseurl + task['stepElement'],
+                            auth = self.client.cred).json()
         
         if task['attachments'].keys():
             self.__printDictionary(task)
@@ -391,12 +392,12 @@ class WorkBasket(object):
         self.kwargs = kwargs
         wf_name = kwargs.get('wf_name')        
         
-        if wf_name not in client.workflow_classes:
+        if wf_name not in self.client.workflow_classes:
             return "There's no wf_name key on dictionary or the WorkFlow name\
  doesn't exist."
-        work_class = requests.get(client.baseurl
-                                 + client.workflow_classes[wf_name]['URI'],
-                                  params={'POE':'1'}, auth=client.cred)        
+        work_class = requests.get(self.client.baseurl
+                                 + self.client.workflow_classes[wf_name]['URI'],
+                                  params={'POE':'1'}, auth=self.client.cred)        
         new_data = work_class.json()
         
         if len(self.kwargs.keys()) <= 1:
@@ -405,10 +406,10 @@ class WorkBasket(object):
         wobnum = new_data['systemProperties']['workObjectNumber']            
 
         if len(self.kwargs.keys()) > 1:
-            started = requests.post(client.baseurl
+            started = requests.post(self.client.baseurl
                                     + 'rosters/DefaultRoster/wc/'
                                     + wf_name+'/wob/'
-                                    + wobnum, auth=client.cred,
+                                    + wobnum, auth=self.client.cred,
                                     json=new_data, params={'POE':'1'})
             return started
            

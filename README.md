@@ -14,7 +14,7 @@ Download this package or run:
 ```shell
 git clone https://github.com/wandss/FileNetPEAPI.git
 ```
-Inside the create directory run:
+Inside the created directory (FileNetPEAPI) run:
 ```shell
 python setup.py build 
 python setup.py install

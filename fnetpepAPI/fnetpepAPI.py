@@ -300,7 +300,7 @@ class WorkBasket(object):
             if isinstance(value, dict):
               self.__printDictionary(value)
             else:
-              print "{0} : {1}".format(key.capitalize(), value)
+              print "%s : %s"%(key.capitalize(), value)
         print ('\n')
 
     

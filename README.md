@@ -97,7 +97,7 @@ wb.showTaskInfo(task)
 ```python
 wb.showComment(task)
 ```
-*Showing AttachmentsInfo for a task:*
+*Showing Attachments Information for a task:*
 ```python
 wb.showAttachmentsInfo(task)
 ```
@@ -119,7 +119,7 @@ wb.saveAndUnlockTask(task, 'Check this out later')
 wb.abort(task)
 ```
 ##Starting (Launching) a new Workflow:
-Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and configuration.
+Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and settings.
 It is possible to have a workflow that needs a destination user to be set and others that already has a specified destinated user.
 Sometimes, when creating a workflow, there might be some datafields to be filled in or documents to be attached at launch step.
 There are many possibilities here and all of them depends the workflow itself.

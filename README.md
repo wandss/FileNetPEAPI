@@ -63,7 +63,7 @@ wb.url
 ```python
 wb.getElementsCount()
 ```
-*Get all the tasks from this queue:*
+*Get all tasks from this queue:*
 ```python
 tasks = wb.getTasks()
 ```

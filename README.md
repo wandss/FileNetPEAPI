@@ -16,7 +16,7 @@ from fnetpepAPI import PEClient, WorkBasket
 ```
 ###To create a "connection":
 ```python
-client = PECLient('server_name', 'server_port', 'user', 'passwd')
+client = PEClient('server_name', 'server_port', 'user', 'passwd')
 ```
 **Sample:**
 *client = PEClient('content_engine', '9080', 'p8admin', 'password')*

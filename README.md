@@ -234,6 +234,7 @@ As shown rigth above, starting (lauching) a workflow relies on many variables. T
 ###Commum atributes for any workflows are:
 - wf_name
 - subject
+
 Any other attribute depends on the Workflow's settings.
 
 ##Notes on this program:

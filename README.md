@@ -20,27 +20,27 @@ client = PEClient('server_name', 'server_port', 'user', 'passwd')
 ```
 **Sample:**
 *client = PEClient('content_engine_server_address', '9080', 'p8admin', 'password')*
-With this client instance of PEClient  you can check:
+With this client instance of PEClient  you can check some variables like:
 
 ####Available App Spaces:
 *Prints appspace names*
 ```python
-client.apps
+print (client.apps)
 ```
 ####Available Queues:
 *Prints a list with queue_names.*
 ```python
-client.queue_names
+print (client.queue_names)
 ```
 ####Available Roles:
 *Prints available roles*
 ```python
-client.roles
+print (client.roles)
 ```
 ####Available Workflow:
 *Prints available workflow names*
 ```python
-client.workflow_classes.keys()
+print (client.workflow_classes.keys())
 ```
 ###Now, create a Workbasket object:
 To do so, is required to pass an **instance from PEClient** and a **queue name**.

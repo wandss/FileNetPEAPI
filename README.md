@@ -122,7 +122,7 @@ wb.abort(task)
 Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and settings.
 It is possible to have a workflow that needs a destination user to be set and others that already has a specified destinated user.
 Sometimes, when creating a workflow, there might be some datafields to be filled in or documents to be attached at launch step.
-There are many possibilities here and all of them depends the workflow itself.
+There are many possibilities here and all of them depends on the workflow itself.
 
 So, since each Workflow has its needs, the first thing is to understand what are the needs from that workflow, to do this run:
 ```python

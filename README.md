@@ -203,8 +203,8 @@ launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='
 launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2' )
 ```
-*To send for more than one user, write user_names separated by ', ' comma and space like:
-**Approvers = 'user1, user2, ..., userX'***
+*To send for more than one user, write user_names separated by ', ' comma and space like:*
+**Approvers = 'user1, user2, ..., userX'**
 
 ####Setting users and values for data field:
 ```python

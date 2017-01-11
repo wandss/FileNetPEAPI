@@ -12,7 +12,7 @@ This API requires [Requests](https://github.com/kennethreitz/requests) by Kennet
 
 ###Running the API:
 ```python
-from pepa import PEClient, WorkBasket
+from fnetpepAPI import PEClient, WorkBasket
 ```
 ###To create a "connection":
 ```python

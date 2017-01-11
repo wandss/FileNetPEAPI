@@ -1,14 +1,15 @@
 # FileNetPEAPI
-A Python API for using FileNet Process Engine (Case Foundation)
+This is a Python API for using FileNet Process Engine (Case Foundation)
 Package name: fnetpepAPI
 
 This document explains how to use this API.
-Is important to have some knowledge on some Process Engine concepts like:
+It is important to have some knowledge on some Process Engine concepts like:
 **Queues, Roles, Workbaskets, etc.**
 
 Obviously knowing **[Python](https://www.python.org/)** will help.
 
 This API requires [Requests](https://github.com/kennethreitz/requests) by Kenneth Reitz, so install it before.
+
 ##Installing the fnetpepAPI:
 Download this package or run:
 ```shell

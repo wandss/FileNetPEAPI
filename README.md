@@ -1,10 +1,10 @@
 # FileNetPEAPI
-This is a Python API for using FileNet Process Engine (Case Foundation)
+This is a Python API for using FileNet Process Engine (Case Foundation).
 Package name: fnetpepAPI
 
 This document explains how to use this API.
 It is important to have some knowledge on some Process Engine concepts like:
-**Queues, Roles, Workbaskets, etc.**
+**Queues, Roles, Workbaskets etc.**
 
 Obviously knowing **[Python](https://www.python.org/)** will help.
 
@@ -23,7 +23,7 @@ python setup.py install
 
 ##Running the API:
 ```python
-from fnetpepAPI.fnetpepAPI import PEClient, WorkBasket
+from fnetpepAPI.fnetpepAPI import PEClient, PE
 ```
 ###To create a "connection":
 ```python
@@ -37,10 +37,10 @@ With this client instance of PEClient  you can check some variables like:
 ```python
 print (client.apps)
 ```
-####Available Queues:
-*Prints a list with queue_names.*
+####Available Workbasket:
+*Prints a list with Workbasket names.*
 ```python
-print (client.queue_names)
+print (client.workbaskets.keys())
 ```
 ####Available Roles:
 *Prints available roles*
@@ -52,16 +52,10 @@ print (client.roles)
 ```python
 print (client.workflow_classes.keys())
 ```
-###Now, create a Workbasket object:
-To do so, is required to pass an **instance from PEClient** and a **queue name**.
-The available queues can be obtained as shown above.
-*If no queue_name is passed, the program will inspect the 'Inbox' for the connected user.*
+###Now, create a PE object:
+To do so, is required to pass an **instance from PEClient**.
 ```python
-wb = WorkBasket(client)
-```
-or
-```python
-wb = WorkBasket(client, 'Queue_name')
+pe = PE(client)
 ```
 ###With a WorkBasket object is possible to retrieve information from a workbasket and manage tasks:
 

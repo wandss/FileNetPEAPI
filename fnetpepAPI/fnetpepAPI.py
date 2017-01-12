@@ -11,27 +11,29 @@ from requests.auth import HTTPBasicAuth
 
 class PEClient(object):
     
-    """Receives a server address, port number, login
-    and password for connecting to IBM FileNet
-    Process Engine over IBM's REST API and creates an object.
+    """Receives a server address, port number, login and password
+    for connecting to IBM FileNet Process Engine over IBM's REST API
+    and creates the base object for interacting with Process Engine.
 
     Usage:
-    >>> from pythonPERest import PEClient, WorkBasket
+    >>> from fnetpepAPI.fnetpepAPI import PEClient, PE
     >>> client = PEClient('server_name', '9080', 'user', 'password')
-    >>> client.apps -> Shows available appspaces
-    >>> client.roles -> Shows available roles
-    >>> client.workflow_classes.keys() -> Show available Workflow
+    >>> client.apps -> PEClient variable with available appspaces
+    >>> client.roles -> PEClient variable with available roles
+    >>> client.workbaskets.keys()-> Dictionary with available Workbaskets
+    >>> client.workflow_classes.keys() -> Dictionary with Workflows.
     """
     
     def __init__(self, server, port, user, passwd):
         self.baseurl = 'http://%s:%s/peengine/P8BPMREST/p8/bpm/v1/'%(server,
                                                                      port)
-        self.server = server
         self.cred = HTTPBasicAuth(user, passwd)
+        self.workbaskets = {}
+        self.queue_urls = []
         self.__getAppSpaces()
         self.__getRoles()
-        self.__getWorkFlowNames()        
-        self.queue_names = self.roles.values()        
+        self.__getWorkFlowNames()
+        self.__getQueues()
 
     def __getAppSpaces(self):        
         """Returns a list with the name of availables appspaces on FileNet,
@@ -65,84 +67,114 @@ class PEClient(object):
         """
         workflow_names = requests.get(self.baseurl+'workclasses',
                                       auth=self.cred).json()        
-        self.workflow_classes = workflow_names    
-
-    def getLoggedUserInfo(self):
-        
+        self.workflow_classes = workflow_names 
+    
+    def __getQueues(self):
+        """Creates a list with URL adresses from workbaskets. Also creates a
+        dictionary with workbasket name as key and it's URL as value.
+        """
+        for apps in self.roles.keys():
+            for roles in self.roles.values():
+                if roles:
+                    for role in roles:
+                        my_role = requests.get(self.baseurl
+                                               +'appspaces/'
+                                               +apps+'/roles/'
+                                               +role,
+                                               auth = self.cred)
+                        if my_role.ok:                            
+                            for uri in my_role.json()['workbaskets'].values():
+                                self.queue_urls.append(uri['URI'])                                
+                                self.workbaskets[uri['URI'].split(
+                                    '/')[-1]] = uri['URI']
+                                
+    def getLoggedUserInfo(self):        
         """Returns a dictionary with logged user information.
         Available information are: email, displayName, id and name
+        Usage:
+        >>> user_info = client.getLoggedUserInfo()
         """
         
         self.userinfo = requests.get(self.baseurl+'currentuser',
-                                     auth=self.cred)        
-        return self.userinfo.json()
+                                     auth=self.cred).json()
+        return self.userinfo                                
 
     
-class WorkBasket(object):
+class PE(object):
     
-    """Create a WorkBasket object. Must pass a PEClient instance.
-    If a 'queue_name' is not specified, the 'Inbox' work basket will be returned.
-    To see availlable 'queues', run client.queue_names.
-    
+    """Creates a PE object. An instance from PEClient must be passed.
     Usage:
-    >>> wb = WorkBasket(client, 'queue_name')
+    >>> pe = PE(client)
     """
     
-    def __init__(self, client, queue_name='Inbox'):
+    def __init__(self, client):
         self.client = client
         self.apps = client.apps
-        self.url = None
-        self.queue = queue_name
-        self.work_basket = self.__getQueueFromRole()
-        self.properties = self.__getWorkBasketProps()
+        self.info = []
         
-    def __getWorkBasketProps(self):
-        """Returns properties from a work basket to a class variable.
-        """
-        properties = requests.get(self.client.baseurl+'queues/'
-                                  + self.queue
-                                  +'/workbaskets/'
-                                  +self.queue
-                                  +'/columns',
-                                  auth = self.client.cred)
-        return properties.json()
-        
-        
-    def __getQueueFromRole(self):
-        """Returns Queues from a Role.
+    def getInboxQueue(self):
+        """Returns the User's Inbox Queue.
+        Usage:
+        >>> inbox = pe.getInboxQueue()
+        >>> inbox.get('count') -> Variable with the total tasks in this Queue.
         """        
-        self.work_basket = requests.get(self.client.baseurl+'queues/'
-                                        + self.queue
+        work_basket = requests.get(self.client.baseurl+'queues/'
+                                        +'Inbox'
                                         +'/workbaskets/'
-                                        +self.queue,
+                                        +'Inbox',
                                         auth = self.client.cred)
-        self.url = self.work_basket.url
-        self.queue_url = self.work_basket.json()['queueElements']
-        return self.work_basket.json()
+        count = requests.get(work_basket.url + '/queueelements/count',
+                             auth = self.client.cred).json()['count']
+        queue = work_basket.json()        
+        queue['count'] = count
+        return queue
     
-    def getElementsCount(self):
+    def getQueue(self, work_basket):
+        """Returns a Queue for a given Workbasket.
+        Usage:
+        >>> my_queue = pe.getQueue('workbasket_name')
+        >>> my_queue.get('count')->Variable with the total tasks in this Queue.
+        """                
         
-        """Returns the amount of available tasks for the queue
-        returned in getQueueFromRole method        
-        """
-        
-        count = requests.get(self.url+'/queueelements/count',
-                             auth=self.client.cred)
-        return count.json()['count']
+        queue = requests.get(self.client.baseurl
+                             + self.client.workbaskets.get(work_basket),
+                             auth = self.client.cred)
+        count = requests.get(queue.url + '/queueelements/count',
+                             auth = self.client.cred).json()['count']
+        queue = queue.json()
+        queue['count'] = count
+        return queue
 
-    def getTasks(self):
-        
-        """Returns a dictionary with all tasks for the given queue.
-        If there aren't tasks, 'None' will be returned.
+    def getAllTasks(self):
+        """Returns all tasks from all Queues.
+        Usage:
+        >>> tasks = pe.getAllTasks()
+        When a Queue has no tasks, a message informing which Queues are empty,
+        will be printed.
         """
-        
-        work_items = requests.get(self.client.baseurl + self.queue_url,
+        tasks = []
+        for uri in self.client.queue_urls:
+            queue = requests.get(self.client.baseurl + uri,
+                                 auth = self.client.cred)
+            found_tasks = self.getTasks(queue.json())
+            if found_tasks:
+                tasks.append(found_tasks)
+        return [tsk for task in tasks for tsk in task]
+
+    def getTasks(self, queue):        
+        """Returns a dictionary with all tasks for the given queue.
+        A queue object is required.
+        Usage:
+        >>> tasks = pe.getTasks(my_queue)
+
+        """
+        work_items = requests.get(self.client.baseurl
+                                  + queue.get('queueElements'),
                                   auth = self.client.cred)
         if not work_items.json():
-            print ("'%s' queue is empty!"%self.queue)
-            return None
-        tasks = work_items.json()['queueElements']
-        return tasks
+            print ("'%s' queue is empty!"%queue['name'])
+        else:
+            return work_items.json()['queueElements']
 
     def getMilestones(self, task):
         milestone = requests.get(self.client.baseurl
@@ -155,7 +187,7 @@ class WorkBasket(object):
         """Receives a task dictionary, obtainned with getTasks() method,
         and locks the task so other users can't access this task at same time.
         Usage:
-        >>> wb.lockTask(task)
+        >>> pe.lockTask(task)
         """
         
         locked = requests.get(self.client.baseurl
@@ -171,13 +203,12 @@ class WorkBasket(object):
 
     def saveAndUnlockTask(self, task, comment = None):
         
-        """Receives a task dictionary obtainned with getTasks() method,
-        unlocks the task and saves it.
-        Optionally, is possible to pass a comment that will be saved in
-        the task.
+        """Receives a task dictionary obtainned with getTasks() or getAllTasks(),
+        method, unlocks the task and saves it. Optionally, is possible to pass
+        a comment that will be saved whitin the task.
         Usage:
-        >>> wb.saveAndUnlockTask(task) or
-        >>> wb.saveAndUnlockTask(task, "Comment added!!!")            
+        >>> pe.saveAndUnlockTask(task) or
+        >>> pe.saveAndUnlockTask(task, "Comment added!!!")            
         """
         
         etag = task['ETag']
@@ -197,7 +228,7 @@ class WorkBasket(object):
                                     + task['stepElement'],
                                     auth = self.client.cred,
                                     params={'action':'saveAndUnlock',
-                                            'If-Match':etag})
+                                            'If-Match':etag})    
     
     def reassignTask(self, task, destination, comment = None):
         
@@ -207,8 +238,8 @@ class WorkBasket(object):
         before reassigning the task, by using saveAndUnlockTask() method.
         
         Usage:
-        >>> wb.reassignTask(task, 'p8_user') or
-        >>> wb.reassignTask(task, 'anyuser', "Hey check this out")        
+        >>> pe.reassignTask(task, 'p8_user') or
+        >>> pe.reassignTask(task, 'anyuser', "Hey check this out")        
         """
         
         if comment:            
@@ -226,14 +257,14 @@ class WorkBasket(object):
                                            'participant':destination,
                                            'If-Match':etag})                                
         else:
-            print("Task can't be reassigned")
+            return "Task can't be reassigned"
             task.close()
 
-    def showComment(self, task):
+    def getComment(self, task):
         
         """Receives a task and if there is comment, it will be printed.
         Usage:
-        >>> wb.showComment(task)
+        >>> comment = pe.getComment(task)
         """
         
         stepelements = requests.get(self.client.baseurl
@@ -241,26 +272,26 @@ class WorkBasket(object):
                                     auth = self.client.cred)
         comment = stepelements.json()['systemProperties']['comment']
 
-        if comment:
-            print (comment)
+        if comment:            
+            return comment
 
-    def showTaskInfo(self, task):
+    def getTaskInfo(self, task):
 
-        """Receives a task and invokes __printDictionary's method
+        """Receives a task and invokes __iterDictionary's method
         for printing all information for the given task.
         Usage:
-        >>> wb.showTaskinfo(task)
+        >>> pe.showTaskinfo(task)
         """
         
         task = requests.get(self.client.baseurl+task['stepElement'],
                             auth=self.client.cred).json()
-        self.__printDictionary(task)                    
+        self.__iterDictionary(task)      
         
     def endTask(self, task):
         
         """Receives a task and finishes it, finishing the workflow itself.
         Usage:
-        >>> wb.endTask(task)
+        >>> pe.endTask(task)
         """
         
         lock = self.lockTask(task)
@@ -272,7 +303,7 @@ class WorkBasket(object):
         
         """Receives a task, and unlocks it without saving any changes.
         Usage:
-        >>> wb.abort(task)
+        >>> pe.abort(task)
         """
         
         eTag = task['ETag']
@@ -280,30 +311,31 @@ class WorkBasket(object):
                               auth=self.client.cred,
                               params={'action':'abort',
                                       'If-Match': eTag})
-    def showAttachmentsInfo(self, task):
+    def getAttachmentsInfo(self, task):
         
         """Receives a task and prints information about files that has been
         attached to the Workflow.
+        Usage:
+        >>> pe.getAttachmentsInfo(task)
         """
-        
+
         task = requests.get(self.client.baseurl + task['stepElement'],
                             auth = self.client.cred).json()
-        
-        if task['attachments'].keys():
-            self.__printDictionary(task)
 
-    def __printDictionary(self, dictionary):
+        if task['attachments'].keys():
+            return self.__iterDictionary(task)
+
+    def __iterDictionary(self, dictionary):
         """Receives a dictionary type object and prints all
         it's keys and values.
         """
         for key, value in dictionary.iteritems():            
             if isinstance(value, dict):
-              self.__printDictionary(value)
+              self.__iterDictionary(value)
             else:
               print "%s : %s"%(key.capitalize(), value)
         print ('\n')
-
-    
+        
     def startWorkflow(self, **kwargs):
         
         """Starting a new workflow is kind of a complex process,
@@ -476,4 +508,4 @@ class WorkBasket(object):
                                 u'desc':u''}                    
                     new_data['attachments'][attachment][
                         'value'] = document 
-        return new_data
+        return new_data  

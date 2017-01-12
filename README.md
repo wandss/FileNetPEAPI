@@ -57,22 +57,19 @@ To do so, is required to pass an **instance from PEClient**.
 ```python
 pe = PE(client)
 ```
-###With a WorkBasket object is possible to retrieve information from a workbasket and manage tasks:
+###With a PE object is possible to retrieve information from a workbasket and manage tasks:
 
-*Prints the url for the workbasket that is been used.*
-```python
-wb.url
-```
-*Prints the amount of available tasks in the Queue for the given workbasket:*
-```python
-wb.getElementsCount()
-```
 *Get all tasks from this queue:*
 ```python
-tasks = wb.getTasks()
+tasks = pe.getAllTasks()
 ```
-*Above, a python list object with tasks will be returned.
+*Above, a python list containning python dictionaries (tasks) will be returned.
 Each task inside this list, is a python dictionary object.*
+
+*Get the Inbox from logged user:*
+```python
+inbox_queue = pe.getInboxQueue()
+```
 
 ###Tasks are the final objects from a Queue. Is possible to interact with them and do the following actions:
 - Reassign a task to other user, 

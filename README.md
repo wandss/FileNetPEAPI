@@ -40,7 +40,7 @@ print (client.apps)
 ####Available Workbasket:
 *Prints a list with Workbasket names.*
 ```python
-print (client.workbaskets.keys())
+wbs = client.workbaskets.keys()
 ```
 ####Available Roles:
 *Prints available roles*
@@ -59,18 +59,33 @@ pe = PE(client)
 ```
 ###With a PE object is possible to retrieve information from a workbasket and manage tasks:
 
-*Get all tasks from this queue:*
+*Get all tasks from all Workbaskets:*
 ```python
 tasks = pe.getAllTasks()
 ```
 *Above, a python list containning python dictionaries (tasks) will be returned.
 Each task inside this list, is a python dictionary object.*
 
-*Get the Inbox from logged user:*
+*Get logged user's Inbox:*
 ```python
 inbox_queue = pe.getInboxQueue()
 ```
-
+*Get a specific Queue from a Workbasket*
+```python
+my_queue = pe.getQueue('workbasket_name')
+```
+*Get tasks from a particular Queue:*
+```python
+tasks = pe.getTasks(my_queue)
+```
+*Other example*:
+```python
+inbox_tasks = pe.getTasks(inbox_queue)
+```
+*Listing the amount tasks in a Queue*:
+```python
+inbox_queue.get('count')
+```
 ###Tasks are the final objects from a Queue. Is possible to interact with them and do the following actions:
 - Reassign a task to other user, 
 - Add comment to a task, 
@@ -84,7 +99,7 @@ inbox_queue = pe.getInboxQueue()
 *You can iterate tasks:*
 ```python
 for task in tasks:      
-      wb.showTaskInfo(task)
+      info = pe.getTaskInfo(task)
 ```            
 *Or work with a specific task*:
 ```python
@@ -92,32 +107,32 @@ task = tasks[0]
 ```
 *Showing Information for a task:*
 ```python
-wb.showTaskInfo(task)
+info = pe.showTaskInfo(task)
 ```
 *Showing Comments for a task:*
 ```python
-wb.showComment(task)
+comment = pe.getComment(task)
 ```
 *Showing Attachments Information for a task:*
 ```python
-wb.showAttachmentsInfo(task)
+attachments = pe.getAttachmentsInfo(task)
 ```
 ###Reassigning a task:
 *To reassign a task, a destination user must be informed:*
 ```python
-wb.reassignTask(task, 'new_user')
+pe.reassignTask(task, 'new_user')
 ```
 *It is also possible to add a comment, like:*
 ```python
-wb.reassignTask(task, 'new_user', 'Hello. The attached document, needs your attention')
+pe.reassignTask(task, 'new_user', 'Hello. The attached document, needs your attention')
 ```
 *In case you want to add a comment but not reassign a task, issue:*
 ```python
-wb.saveAndUnlockTask(task, 'Check this out later')
+pe.saveAndUnlockTask(task, 'Check this out later')
 ```
 *When interacting with a task it will automatically be locked, so you might need to unlocks it by issuing:*
 ```python
-wb.abort(task)
+pe.abort(task)
 ```
 ##Starting (Launching) a new Workflow:
 Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and settings.
@@ -127,7 +142,7 @@ There are many possibilities here and all of them depends on the workflow itself
 
 So, since each Workflow has its needs, the first thing is to understand what are the needs from that workflow, to do this run:
 ```python
-launchstep = wb.startWorkflow(wf_name = 'WorkFlowName')
+launchstep = pe.startWorkflow(wf_name = 'WorkFlowName')
 ```
 *You must run this with the wf_name property. Not doing so, will return the message:*
 **"There's no wf_name key on dictionary"**
@@ -147,7 +162,7 @@ Usually IBM packages two basic "Document Approval" sample workflows within FileN
 ##Practical example:
 *When running:*
 ```python
-launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval')
+launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval')
 ```
 Aside printing the information, the above command, will return a dictionary to 'launched' variable 
 containing the same printed information.
@@ -196,12 +211,12 @@ DocumentforReview
 ###Samples for starting this specific workflow:
 ####Sending to one user:
 ```python
-launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='destinated_user' )
+launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='destinated_user' )
 ```
 *Only informed one destination user.*
 ####Sending to more users:
 ```python
-launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
+launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2' )
 ```
 *To send for more than one user, write user_names separated by ', ' comma and space like:*
@@ -209,7 +224,7 @@ launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
 
 ####Setting users and values for data field:
 ```python
-launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
+launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2',
                             ICN_Instructions='Here some instructions',
                             ICN_AllowReassign=True                            
@@ -220,7 +235,7 @@ In the above example "ICN_AllowReassign" was created in workflow as a boolean ty
 
 ####Setting users, values for data field and attaching a document:
 ```python
-launched = wb.startWorkflow(wf_name='ICNSequentialDocumentApproval',
+launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2', 
                             ICN_Instructions='Here some instructions',
                             ICN_AllowReassign=True, DocumentforReview="{Filenet's Document ID}",

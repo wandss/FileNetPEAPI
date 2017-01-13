@@ -521,7 +521,3 @@ class PE(object):
                     new_data['attachments'][attachment][
                         'value'] = document 
         return new_data
-client = PEClient('ecmlnx','9080','p8sadsv','copasa')
-pe = PE(client)
-fila = pe.getQueue('Emprestimo')
-task = pe.getTasks(fila)[0]

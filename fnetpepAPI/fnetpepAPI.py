@@ -109,8 +109,7 @@ class PE(object):
     
     def __init__(self, client):
         self.client = client
-        self.apps = client.apps
-        self.info = []
+        self.apps = client.apps       
         
     def getInboxQueue(self):
         """Returns the User's Inbox Queue.
@@ -228,7 +227,13 @@ class PE(object):
                                     + task['stepElement'],
                                     auth = self.client.cred,
                                     params={'action':'saveAndUnlock',
-                                            'If-Match':etag})    
+                                            'If-Match':etag})        
+        queue = self.getQueue(task.get('queueName'))
+        tasks = self.getTasks(queue)
+        for newtask in tasks:
+            if newtask['workObjectNumber'] == task['workObjectNumber']:
+                task = newtask
+        return task
     
     def reassignTask(self, task, destination, comment = None):
         
@@ -276,16 +281,14 @@ class PE(object):
             return comment
 
     def getTaskInfo(self, task):
-
         """Receives a task and invokes __iterDictionary's method
         for printing all information for the given task.
         Usage:
         >>> pe.showTaskinfo(task)
         """
-        
-        task = requests.get(self.client.baseurl+task['stepElement'],
-                            auth=self.client.cred).json()
-        self.__iterDictionary(task)      
+        self.info = {}
+        self.__iterDictionary(task)        
+        return self.info
         
     def endTask(self, task):
         
@@ -311,19 +314,20 @@ class PE(object):
                               auth=self.client.cred,
                               params={'action':'abort',
                                       'If-Match': eTag})
-    def getAttachmentsInfo(self, task):
         
+    def getAttachmentsInfo(self, task):        
         """Receives a task and prints information about files that has been
         attached to the Workflow.
         Usage:
         >>> pe.getAttachmentsInfo(task)
         """
-
+        self.info = {}
         task = requests.get(self.client.baseurl + task['stepElement'],
                             auth = self.client.cred).json()
 
         if task['attachments'].keys():
-            return self.__iterDictionary(task)
+            self.__iterDictionary(task)
+            return self.info
 
     def __iterDictionary(self, dictionary):
         """Receives a dictionary type object and prints all
@@ -333,8 +337,9 @@ class PE(object):
             if isinstance(value, dict):
               self.__iterDictionary(value)
             else:
-              print "%s : %s"%(key.capitalize(), value)
-        print ('\n')
+              #print "%s : %s"%(key.capitalize(), value)
+              self.info[key.capitalize()] = value
+
         
     def startWorkflow(self, **kwargs):
         
@@ -508,4 +513,4 @@ class PE(object):
                                 u'desc':u''}                    
                     new_data['attachments'][attachment][
                         'value'] = document 
-        return new_data  
+        return new_data

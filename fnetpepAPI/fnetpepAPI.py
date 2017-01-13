@@ -206,33 +206,41 @@ class PE(object):
         method, unlocks the task and saves it. Optionally, is possible to pass
         a comment that will be saved whitin the task.
         Usage:
-        >>> pe.saveAndUnlockTask(task) or
-        >>> pe.saveAndUnlockTask(task, "Comment added!!!")            
+        >>> task = pe.saveAndUnlockTask(task) or
+        >>> task = pe.saveAndUnlockTask(task, "Comment added!!!")            
         """
         
         etag = task['ETag']
         stepEl =  requests.get(self.client.baseurl
                                +task['stepElement'],
                                auth = self.client.cred)
-        if comment:
-            updatedJson = stepEl.json()
-            updatedJson['systemProperties']['comment'] = comment
-            self.lockTask(task)
-            unlocked = requests.put(stepEl.url, auth = self.client.cred,
-                                    params = {'action':'saveAndUnlock',
-                                              'If-Match':etag},
-                                    json = updatedJson)            
-        else: 
-            unlocked = requests.put(self.client.baseurl
-                                    + task['stepElement'],
-                                    auth = self.client.cred,
-                                    params={'action':'saveAndUnlock',
-                                            'If-Match':etag})        
-        queue = self.getQueue(task.get('queueName'))
-        tasks = self.getTasks(queue)
-        for newtask in tasks:
-            if newtask['workObjectNumber'] == task['workObjectNumber']:
-                task = newtask
+        try:
+            if comment:
+                updatedJson = stepEl.json()
+                updatedJson['systemProperties']['comment'] = comment
+                self.lockTask(task)
+                unlocked = requests.put(stepEl.url, auth = self.client.cred,
+                                        params = {'action':'saveAndUnlock',
+                                                  'If-Match':etag},
+                                        json = updatedJson)            
+            else: 
+                unlocked = requests.put(self.client.baseurl
+                                        + task['stepElement'],
+                                        auth = self.client.cred,
+                                        params={'action':'saveAndUnlock',
+                                                'If-Match':etag})
+            
+
+            for k, v in self.client.workbaskets.items():
+                if task.get('queueName') in v:
+                    queue = self.getQueue(v.split('/')[-1])
+                    tasks = self.getTasks(queue)
+                    for newtask in tasks:
+                        if newtask['workObjectNumber'] == task['workObjectNumber']:
+                            task = newtask
+                            break
+        except Exception as e:
+            self.abort(task)
         return task
     
     def reassignTask(self, task, destination, comment = None):
@@ -290,13 +298,13 @@ class PE(object):
         self.__iterDictionary(task)        
         return self.info
         
-    def endTask(self, task):
+    def endTask(self, task, comment=None):
         
         """Receives a task and finishes it, finishing the workflow itself.
         Usage:
         >>> pe.endTask(task)
-        """
-        
+        """        
+            
         lock = self.lockTask(task)
         etag = task['ETag']       
         dispatched = requests.put(self.client.baseurl + task['stepElement'],
@@ -336,8 +344,7 @@ class PE(object):
         for key, value in dictionary.iteritems():            
             if isinstance(value, dict):
               self.__iterDictionary(value)
-            else:
-              #print "%s : %s"%(key.capitalize(), value)
+            else:              
               self.info[key.capitalize()] = value
 
         
@@ -514,3 +521,7 @@ class PE(object):
                     new_data['attachments'][attachment][
                         'value'] = document 
         return new_data
+client = PEClient('ecmlnx','9080','p8sadsv','copasa')
+pe = PE(client)
+fila = pe.getQueue('Emprestimo')
+task = pe.getTasks(fila)[0]

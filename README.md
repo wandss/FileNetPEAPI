@@ -36,7 +36,7 @@ from fnetpepAPI.fnetpepAPI import PEClient, PE
 ```python
 client = PEClient('server_name', 'server_port', 'user', 'passwd')
 ```
-*Sample: client = PEClient('content_engine_server_address', '9080', 'p8admin', 'password')*
+*Sample: client = PEClient('content_engine_server_address', '9080', 'p8admin', 'password').*
 With this instance of PEClient is possible to check some variables like:
 
 ####Available App Spaces:

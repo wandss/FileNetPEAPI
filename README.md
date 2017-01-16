@@ -105,6 +105,8 @@ inbox_queue.get('count')
 - Reassign a task to other user, 
 - Locks a task, so other users can’t interact with it while you're working, 
 - Unlocks the task without saving any modifications, 
+- Finishing the task,
+- Starting (Launching) a Workflow,
 
 ####Showing information from tasks:
 *You can iterate tasks:*
@@ -145,19 +147,24 @@ prefer passing unicoded text (u'Text') and not pure string objects.
 ```python
 pe.reassignTask(task, 'new_user')
 ```
-*It is also possible to add a comment, like:*
+*It is also possible to add a comment before reassigning a task, like:*
 ```python
-pe.reassignTask(task, 'new_user', 'Hello. The attached document, needs your attention')
+pe.reassignTask(task, 'new_user', u'Hello. Your attention is required for the attached Document!')
 ```
-*In case you want to add a comment but not reassign a task, issue:*
-```python
-pe.saveAndUnlockTask(task, 'Check this out later')
-```
-*When interacting with a task it will automatically be locked, so you might need to unlocks it by issuing:*
+*When interacting with a task it will be automatically locked, so you might need to unlocks it by issuing:*
 ```python
 pe.abort(task)
 ```
-##Starting (Launching) a new Workflow:
+##Finishing a task:
+*Finishing a task is the same of finishing a step. If the step is the last of the workflow, the workflow might be finished.
+It is also possible to pass a comment before finishing the step*
+```python
+pe.endTask(task) #no comment passed.
+```
+```python
+pe.endTask(task, u'Any comment you like') #comment passed.
+```
+##Starting (Launching) a Workflow:
 Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and settings.
 It is possible to have a workflow that needs a destination user to be set and others that already has a specified destinated user.
 Sometimes, when creating a workflow, there might be some datafields to be filled in or documents to be attached at launch step.

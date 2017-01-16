@@ -172,14 +172,14 @@ pe.endTask(task, u'Any comment you like') #comment passed.
 Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and settings.
 It is possible to have a workflow that needs a destination user to be set and others that already has a specified destinated user.
 Sometimes, when creating a workflow, there might be some datafields to be filled in or documents to be attached at launch step.
-There are many possibilities here and all of them depends on the workflow itself.
+There are many possibilities here and eache one of them depends on the workflow itself.
 
 So, since each Workflow has its needs, the first thing is to understand what are the needs from that workflow, to do this run:
 ```python
 launchstep = pe.startWorkflow(wf_name = 'WorkFlowName')
 ```
 *You must run this with the wf_name property. Not doing so, will return the message:*
-**"There's no wf_name key on dictionary"**
+**"There's no 'wf_name' key on dictionary or the WorkFlow name doesn't exist."**
 To find out Workflow names, issue (as mentioned above):
 ```python
 client.workflow_classes.keys()
@@ -277,22 +277,24 @@ launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             )
 ```
 ***Only documents available in FileNet repository can be attached, therefore the ID for this document must be passed here. It is also required to pass the object_store key with the desired 'ObjectStoreName'
-It is also possible to set a subject for this Workflow by passing the parameter subject, with any string you like as value.***
+It is also available to set a subject for this Workflow by passing the parameter subject, with any string you like as value.***
 
 As shown rigth above, starting (lauching) a workflow relies on many variables. Therefore is important to know the workflow that's about to be started.
 
 ###Commum atributes for any workflows are:
-- wf_name
+- wf_name **required**
 - subject
 
 Any other attribute depends on the Workflow's settings.
 
 ##Notes on this program:
-Obviously there are many things to improve at this API (and probably some bugs) yet, at the state it is now, I do believe it can be shared, since I've already used it to implement at least other trhee different applications and they are working just fine.
+Obviously there are many things to improve at this API (and probably some bugs). Yet, at the state it is now, I do believe it can be shared, since I've already used it to implement at least other trhee different applications and they are working just fine.
+
+As metionend at the top of this document, this API (untill now) will only work with Python 2.x versions.
 
 I do hope this API can be useful for those who intends to develop FileNet application as it has been to myself.
 
-This API aims the "Process Engine" only. To expand it's usage and use Python to access "Content Engine" as well, I do recommend the **Open CMIS API**.
+This API aims the "Process Engine" only (Case Foundation). To expand it's usage and use Python to access "Content Engine" as well, I do recommend the **Open CMIS API**.
 
 Open CMIS is an amazing API for accessing and controlling objects inside a CMIS Compliant repository.
 It is distributed and maintenned by Apache, [Apache Chemistry](http://chemistry.apache.org/python/cmislib.html) and written by Mr. [Jeff Pots](https://github.com/jpotts)

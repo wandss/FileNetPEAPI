@@ -11,7 +11,7 @@ Obviously knowing **[Python](https://www.python.org/)** will help.
 
 This API requires [Requests](https://github.com/kennethreitz/requests) by Kenneth Reitz, so install it before.
 
-*If using the setup.py script, Requests will be automatically installed*
+*Note: If using the setup.py script, Requests will be automatically installed*
 
 **Important!!!!**
 **-At this point, this API is only working with Python2 version**

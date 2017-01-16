@@ -15,7 +15,7 @@ This API requires [Requests](https://github.com/kennethreitz/requests) by Kennet
 
 **Important!!!!**
 
-**-At this point, this API is only working with Python2 version**
+**- At this point, this API is only working with Python2 version**
 
 ##Installing the fnetpepAPI:
 Download this package or run:

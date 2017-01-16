@@ -282,7 +282,7 @@ It is also available to set a subject for this Workflow by passing the parameter
 As shown rigth above, starting (lauching) a workflow relies on many variables. Therefore is important to know the workflow that's about to be started.
 
 ###Commum atributes for any workflows are:
-- wf_name **required**
+- wf_name **(required)**
 - subject
 
 Any other attribute depends on the Workflow's settings.

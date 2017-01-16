@@ -4,11 +4,15 @@ Package name: fnetpepAPI
 
 This document explains how to use this API.
 It is important to have some knowledge on some Process Engine concepts like:
-**Queues, Roles, Workbaskets etc.**
+**App Spaces, Roles, Workbaskets, Queues etc.**
 
 Obviously knowing **[Python](https://www.python.org/)** will help.
 
 This API requires [Requests](https://github.com/kennethreitz/requests) by Kenneth Reitz, so install it before.
+*If using the setup.py script, Requests will be automatically installed*
+
+**Important!!!!**
+**-At this point, this API is only working with Python2 version**
 
 ##Installing the fnetpepAPI:
 Download this package or run:
@@ -30,29 +34,33 @@ from fnetpepAPI.fnetpepAPI import PEClient, PE
 client = PEClient('server_name', 'server_port', 'user', 'passwd')
 ```
 *Sample: client = PEClient('content_engine_server_address', '9080', 'p8admin', 'password')*
-With this client instance of PEClient  you can check some variables like:
+With this instance of PEClient is possible to check some variables like:
 
 ####Available App Spaces:
 *Prints appspace names*
 ```python
-print (client.apps)
+apps = client.apps
+print apps
 ```
 ####Available Workbasket:
 *Prints a list with Workbasket names.*
 ```python
 wbs = client.workbaskets.keys()
+print wbs
 ```
 ####Available Roles:
-*Prints available roles*
+*Prints a python dictionary with Appspace and its roles*
 ```python
-print (client.roles)
+roles = client.roles
+print roles
 ```
 ####Available Workflow:
 *Prints available workflow names*
 ```python
-print (client.workflow_classes.keys())
+wf_names = client.workflow_classes.keys()
+print wf_names
 ```
-###Now, create a PE object:
+###Now, create a "PE" object:
 To do so, is required to pass an **instance from PEClient**.
 ```python
 pe = PE(client)
@@ -61,18 +69,21 @@ pe = PE(client)
 
 *Get all tasks from all Workbaskets:*
 ```python
-tasks = pe.getAllTasks()
+all_tasks = pe.getAllTasks()
 ```
-*Above, a python list containning python dictionaries (tasks) will be returned.
-Each task inside this list, is a python dictionary object.*
+*Above, a python list containning python dictionaries (tasks), will be returned.*
 
-*Get logged user's Inbox:*
+*Get logged user's Inbox Queue:*
 ```python
 inbox_queue = pe.getInboxQueue()
 ```
 *Get a specific Queue from a Workbasket*
 ```python
 my_queue = pe.getQueue('workbasket_name')
+```
+or
+```python
+my_queue = pe.geQueue(wbs[index])
 ```
 *Get tasks from a particular Queue:*
 ```python
@@ -86,20 +97,20 @@ inbox_tasks = pe.getTasks(inbox_queue)
 ```python
 inbox_queue.get('count')
 ```
-###Tasks are the final objects from a Queue. Is possible to interact with them and do the following actions:
-- Reassign a task to other user, 
+###Tasks are the final objects from a Queue. Is possible to interact with them and doing the following actions:
+- Show information from a task,
+- Show information from documents attached to the task,
+- Show comments, 
 - Add comment to a task, 
+- Reassign a task to other user, 
 - Locks a task, so other users can’t interact with it while you're working, 
 - Unlocks the task without saving any modifications, 
-- Show comments, 
-- Show information from a task, 
-- Show information from documents attached to the task.
 
 ####Showing information from tasks:
 *You can iterate tasks:*
 ```python
 for task in tasks:      
-      info = pe.getTaskInfo(task)
+      pe.some_action(task)
 ```            
 *Or work with a specific task*:
 ```python
@@ -108,15 +119,27 @@ task = tasks[0]
 *Showing Information for a task:*
 ```python
 info = pe.showTaskInfo(task)
+for k, v in info.items():
+	print '%s: %s'%(k, v)
 ```
 *Showing Comments for a task:*
 ```python
 comment = pe.getComment(task)
+print comment
 ```
 *Showing Attachments Information for a task:*
 ```python
-attachments = pe.getAttachmentsInfo(task)
+attached_doc = pe.getAttachmentsInfo(task)
+for k, v in attached_doc.items():
+	print '%s: %s'%(k, v)
 ```
+###Adding comment to a task:
+```python
+task = pe.saveAndUnlockTask(task, u'This is a Comment')
+```
+*Important: When adding a comment, the updated task will be returned. Also important, to avoid issues with special characters, 
+prefer passing unicoded text (u'Text') and not pure string objects.
+
 ###Reassigning a task:
 *To reassign a task, a destination user must be informed:*
 ```python

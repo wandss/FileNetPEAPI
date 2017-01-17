@@ -315,7 +315,9 @@ To use Open CMIS with FileNet is required to have IBM CMIS installed.
 There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/developerworks/library/x-cmis1/)
 
 ##About Versions:
+
 ###Version 1.0.0: 
 - Initial version.
+
 ###Version 1.1.0: 
 - Added functionality for returning a task to it's original workbasket.

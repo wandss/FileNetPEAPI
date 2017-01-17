@@ -1,7 +1,7 @@
 #encoding=utf-8
 """
 Process Engine Python API.
-fnetpepAPI: version 1.0
+fnetpepAPI: version 1.1.0
 copyright: (c) 2016 by Wanderley Souza.
 license: Apache2, see LICENSE for more details.
 """
@@ -271,8 +271,35 @@ class PE(object):
                                            'If-Match':etag})                                
         else:
             return "Task can't be reassigned"
-            task.close()
+            
+    def returnToSource(self, task, comment=None):
+        """Given a task, this method will returns it to a previous Workbasket.
+        If a task has been moved between workbaskets or moved to the user's
+        Inbox queue, this method will return it to it's original workbasket.
+        Is possible to add a comment before returning this task.
+        
+        Usage:
+        >>> pe.returnToSource(task) #or
+        >>> pe.returnToSource(task, 'With Comment')
+        """
+        
+        if comment:            
+            self.lockTask(task)
+            self.saveAndUnlockTask(task, comment)
+            
+        task = requests.get(self.client.baseurl
+                            + task['stepElement'],
+                            auth = self.client.cred)
 
+        etag = task.headers['ETag']
+        
+        if task.json()['systemProperties']['canReturnToSource']:
+            returned = requests.put(task.url, auth=self.client.cred,
+                                   params={'action':'returnToSource',
+                                           'If-Match':etag})
+        else:
+            return "Returning to source is not available for this task"
+        
     def getComment(self, task):
         
         """Receives a task and if there is comment, it will be printed.

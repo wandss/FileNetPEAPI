@@ -332,10 +332,11 @@ class PE(object):
         self.info = {}
         task = requests.get(self.client.baseurl + task['stepElement'],
                             auth = self.client.cred).json()
-
-        if task['attachments'].keys():
-            self.__iterDictionary(task)
-            return self.info
+        
+        if task.get('attachments'):
+            self.__iterDictionary(task['attachments'])            
+            if self.info.has_key('Vsid'):
+                return self.info
 
     def __iterDictionary(self, dictionary):
         """Receives a dictionary type object and prints all
@@ -519,5 +520,12 @@ class PE(object):
                                 u'type':3,
                                 u'desc':u''}                    
                     new_data['attachments'][attachment][
-                        'value'] = document 
+                        'value'] = document
         return new_data
+client = PEClient('ecmlnx','9080','p8sadsv','copasa')
+pe = PE(client)
+inbox = pe.getInboxQueue()
+tasks = pe.getTasks(inbox)
+info = []
+for t in tasks:
+    info.append(pe.getAttachmentsInfo(t))

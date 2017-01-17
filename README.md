@@ -162,7 +162,7 @@ pe.abort(task)
 ```
 ##Returning a task to it's original Workbasket:
 *If a task has been moved between workbaskets (queues) or moved from one workbasket to user's Inbox, is possible sending it back to it's original workbasket. It is also allowed to insert a comment before sending it back.
-A task must be passed. If the task can't be moved back to it's original workbasket or it is already there, a message informing this will be return*
+A task must be passed. If the task can't be moved back to it's original workbasket or if it already is there, a message informing this will be returned.*
 ```python
 pe.returnToSoruce(task) #no comment
 pe.returnToSource(task, "Here some explanatory message")
@@ -313,3 +313,7 @@ Open CMIS works with most of CMIS Compliant Repository, therefore is possible to
 
 To use Open CMIS with FileNet is required to have IBM CMIS installed.
 There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/developerworks/library/x-cmis1/)
+
+##About Versions:
+###Version 1.1.0: 
+- Added functionality for returning a task to it's original workbasket.

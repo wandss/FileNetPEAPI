@@ -274,9 +274,10 @@ class PE(object):
             else:
                 return "Task can't be reassigned"
         else:
-            return found_user
+            return "User '%s' not find in Directory Service"%destination
             
     def returnToSource(self, task, comment=None):
+        
         """Given a task, this method will returns it to a previous Workbasket.
         If a task has been moved between workbaskets or moved to the user's
         Inbox queue, this method will return it to it's original workbasket.

@@ -106,6 +106,7 @@ inbox_queue.get('count')
 - Show information from documents attached to the task,
 - Show comments, 
 - Add comment to a task, 
+- Search Directory service for users,
 - Reassign a task to other user, 
 - Returning a task to the it's original Workbasket,
 - Locks a task, so other users can’t interact with it while you're working, 
@@ -145,16 +146,29 @@ print comment
 task = pe.saveAndUnlockTask(task, u'This is a Comment')
 ```
 *Important: When adding a comment, the updated task will be returned. Also important, to avoid issues with special characters, 
-prefer passing unicoded text (u'Text') and not pure string objects.
+prefer passing unicoded text (u'Text') and not pure string objects.*
+##Search Directory Service for users:
+*Given a string the API will return a list with users who match the passed string or a message informing that the User wasn't found.*
+```python
+user = pe.getUser('username')
+print user
+```
 
 ##Reassigning a task:
 *To reassign a task, a destination user must be informed:*
 ```python
-pe.reassignTask(task, 'new_user')
+reassign = pe.reassignTask(task, 'new_user')
 ```
 *It is also possible to add a comment before reassigning a task, like:*
 ```python
-pe.reassignTask(task, 'new_user', u'Hello. Your attention is required for the attached Document!')
+reassign = pe.reassignTask(task, 'new_user', u'Hello. Your attention is required for the attached Document!')
+print reassign
+```
+*When reassigning a task, the destination user will be checked (added on version 1.2.0) on the Directory Service. If the user is not found a message informing that the User wans't found will be returned to the "reassign" variable as showed above.*
+```python
+reassign = pe.reassignTask(task, 'new_user')
+print reassign
+>>> "User 'new_user' not found in Directory Service"
 ```
 *When interacting with a task it will be automatically locked, so you might need to unlocks it by issuing:*
 ```python

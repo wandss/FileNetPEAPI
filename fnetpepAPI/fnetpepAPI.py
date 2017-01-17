@@ -522,10 +522,3 @@ class PE(object):
                     new_data['attachments'][attachment][
                         'value'] = document
         return new_data
-client = PEClient('ecmlnx','9080','p8sadsv','copasa')
-pe = PE(client)
-inbox = pe.getInboxQueue()
-tasks = pe.getTasks(inbox)
-info = []
-for t in tasks:
-    info.append(pe.getAttachmentsInfo(t))

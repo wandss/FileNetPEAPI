@@ -335,3 +335,8 @@ There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/
 
 ###Version 1.1.0: 
 - Added functionality for returning a task to it's original workbasket.
+
+###Version 1.2.0: 
+- Created functionality  for seraching users in Directory Service .
+- Now the user is validated before a task can be reassigned.
+

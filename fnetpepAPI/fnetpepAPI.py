@@ -1,7 +1,7 @@
 #encoding=utf-8
 """
 Process Engine Python API.
-fnetpepAPI: version 1.1.0
+fnetpepAPI: version 1.2.0
 copyright: (c) 2016 by Wanderley Souza.
 license: Apache2, see LICENSE for more details.
 """
@@ -254,23 +254,27 @@ class PE(object):
         >>> pe.reassignTask(task, 'p8_user') or
         >>> pe.reassignTask(task, 'anyuser', "Hey check this out")        
         """
-        
-        if comment:            
-            self.lockTask(task)
-            self.saveAndUnlockTask(task, comment)
-            
-        task = requests.get(self.client.baseurl
-                            + task['stepElement'],
-                            auth = self.client.cred)
-        etag = task.headers['ETag']
+        found_user = self.getUser(destination)
 
-        if (task.json()['systemProperties']['canReassign']):
-            reassigned = requests.put(task.url, auth=self.client.cred,
-                                   params={'action':'reassign',
-                                           'participant':destination,
-                                           'If-Match':etag})                                
+        if destination in found_user:        
+            if comment:            
+                self.lockTask(task)
+                self.saveAndUnlockTask(task, comment)
+                
+            task = requests.get(self.client.baseurl
+                                + task['stepElement'],
+                                auth = self.client.cred)
+            etag = task.headers['ETag']
+
+            if (task.json()['systemProperties']['canReassign']):
+                reassigned = requests.put(task.url, auth=self.client.cred,
+                                       params={'action':'reassign',
+                                               'participant':destination,
+                                               'If-Match':etag})                               
+            else:
+                return "Task can't be reassigned"
         else:
-            return "Task can't be reassigned"
+            return found_user
             
     def returnToSource(self, task, comment=None):
         """Given a task, this method will returns it to a previous Workbasket.
@@ -375,6 +379,26 @@ class PE(object):
             else:              
               self.info[key.capitalize()] = value
 
+    def getUser(self, search_string):
+        """Receives a string and looks for it in directory service. If the
+        string search isn't found, the message "User not Found" will be
+        returned, otherwise a list with all matching cases, limited to 50
+        results will be returned.
+        Usage:
+        >>> users = pe.getUser('user_name')
+        """
+        
+        users = []
+        user = requests.get(self.client.baseurl+'users',
+                            auth=self.client.cred,
+                            params={'searchPattern':search_string,
+                                    'searchType':4, 'limit':50})
+        if user.json().get('users'):            
+            for usr in user.json()['users']:
+                users.append(usr['displayName'])
+        else:
+            return "User not Found"
+        return users
         
     def startWorkflow(self, **kwargs):
         
@@ -483,8 +507,7 @@ class PE(object):
                                     + wf_name+'/wob/'
                                     + wobnum, auth=self.client.cred,
                                     json=new_data, params={'POE':'1'})
-            return started
-           
+            return started           
         return work_class
 
     def __showAvailableWorkClassOpt(self, work_class):

@@ -274,7 +274,7 @@ class PE(object):
             else:
                 return "Task can't be reassigned"
         else:
-            return "User '%s' not find in Directory Service"%destination
+            return "User '%s' not found in Directory Service"%destination
             
     def returnToSource(self, task, comment=None):
         

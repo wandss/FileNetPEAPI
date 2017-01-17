@@ -107,12 +107,13 @@ inbox_queue.get('count')
 - Show comments, 
 - Add comment to a task, 
 - Reassign a task to other user, 
+- Returning a task to the it's original Workbasket,
 - Locks a task, so other users can’t interact with it while you're working, 
 - Unlocks the task without saving any modifications, 
 - Finishing the task,
 - Starting (Launching) a Workflow,
 
-####Showing information from tasks:
+##Showing information from tasks:
 *You can iterate tasks:*
 ```python
 for task in tasks:      
@@ -122,31 +123,31 @@ for task in tasks:
 ```python
 task = tasks[0]
 ```
-*Showing Information for a task:*
+*Showing Information from a task:*
 ```python
 info = pe.showTaskInfo(task)
 for k, v in info.items():
 	print '%s: %s'%(k, v)
 ```
-*Showing Comments for a task:*
-```python
-comment = pe.getComment(task)
-print comment
-```
-*Showing Attachments Information for a task:*
+*Showing Attachments Information from a task:*
 ```python
 attached_doc = pe.getAttachmentsInfo(task)
 for k, v in attached_doc.items():
 	print '%s: %s'%(k, v)
 ```
-###Adding comment to a task:
+*Showing Comments from a task:*
+```python
+comment = pe.getComment(task)
+print comment
+```
+##Adding comment to a task:
 ```python
 task = pe.saveAndUnlockTask(task, u'This is a Comment')
 ```
 *Important: When adding a comment, the updated task will be returned. Also important, to avoid issues with special characters, 
 prefer passing unicoded text (u'Text') and not pure string objects.
 
-###Reassigning a task:
+##Reassigning a task:
 *To reassign a task, a destination user must be informed:*
 ```python
 pe.reassignTask(task, 'new_user')
@@ -158,6 +159,13 @@ pe.reassignTask(task, 'new_user', u'Hello. Your attention is required for the at
 *When interacting with a task it will be automatically locked, so you might need to unlocks it by issuing:*
 ```python
 pe.abort(task)
+```
+##Returning a task to it's original Workbasket:
+*If a task has been moved between workbaskets (queues) or moved from one workbasket to user's Inbox, is possible sending it back to it's original workbasket. It is also allowed to insert a comment before sending it back.
+A task must be passed. If the task can't be moved back to it's original workbasket or it is already there, a message informing this will be return*
+```python
+pe.returnToSoruce(task) #no comment
+pe.returnToSource(task, "Here some explanatory message")
 ```
 ##Finishing a task:
 *Finishing a task is the same of finishing a step. If the step is the last of the workflow, the workflow might be finished.

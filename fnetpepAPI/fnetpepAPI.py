@@ -1,7 +1,7 @@
 #encoding=utf-8
 """
 Process Engine Python API.
-fnetpepAPI: version 1.0
+fnetpepAPI: version 1.1.0
 copyright: (c) 2016 by Wanderley Souza.
 license: Apache2, see LICENSE for more details.
 """

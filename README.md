@@ -103,7 +103,7 @@ inbox_queue.get('count')
 ```
 ###Tasks are the final objects from a Queue. Is possible to interact with them and doing the following actions:
 
-- (#Show information from documents attached to the task,)
+- #Show information from documents attached to the task,
 - Show comments, 
 - Add comment to a task, 
 - Search Directory service for users,

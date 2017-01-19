@@ -102,7 +102,7 @@ inbox_tasks = pe.getTasks(inbox_queue)
 inbox_queue.get('count')
 ```
 ###Tasks are the final objects from a Queue. Is possible to interact with them and doing the following actions:
-- [Show information from a task],(#Showing information from tasks:)
+- [Show information from a task,](##Showing information from tasks:)
 - Show information from documents attached to the task,
 - Show comments, 
 - Add comment to a task, 
@@ -114,7 +114,7 @@ inbox_queue.get('count')
 - Finishing the task,
 - Starting (Launching) a Workflow,
 
-##Showing information from tasks:
+(##Showing information from tasks:)
 *You can iterate tasks:*
 ```python
 for task in tasks:      

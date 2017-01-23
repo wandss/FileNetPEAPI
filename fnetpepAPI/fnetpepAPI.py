@@ -336,7 +336,31 @@ class PE(object):
                                     auth = self.client.cred).json()
         responses = step['systemProperties']['responses']
         return responses
-        
+
+    def setStepResponse(self, task, response):        
+        etag = task['ETag']
+        try:
+            step = requests.get(self.client.baseurl+ task['stepElement'],
+                                auth = self.client.cred)
+            updatedJson = step.json()
+            updatedJson['systemProperties']['selectedResponse'] = response
+            self.lockTask(task)
+            unlocked = requests.put(step.url, auth = self.client.cred,
+                                    params = {'action':'saveAndUnlock',
+                                              'If-Match':etag},
+                                    json = updatedJson)
+
+            for k, v in self.client.workbaskets.items():
+                if task.get('queueName') in v:
+                    queue = self.getQueue(v.split('/')[-1])
+                    tasks = self.getTasks(queue)
+                    for newtask in tasks:
+                        if newtask['workObjectNumber'] == task['workObjectNumber']:
+                            task = newtask
+                            break
+        except Exception as e:
+            self.abort(task)
+        return task
    
         
     def endTask(self, task, comment=None, response=None):
@@ -344,13 +368,25 @@ class PE(object):
         """Receives a task and finishes it, finishing the workflow itself.
         Usage:
         >>> pe.endTask(task)
-        """        
-            
+        """
+        reponses = self.getStepResponses(task)
+        if responses and not response:
+            return "A response must be passed"
+        params = {'action':'dispatch'}
+        if comment:
+            task = self.saveAndUnlockTask(task, comment)
+        if response:
+            params['selectedResponse'] = 1
+            task = self.setStepResponse(task, response)        
+            params['If-Match'] = task['ETag']
+
+     
         lock = self.lockTask(task)
-        etag = task['ETag']       
+        params['If-Match'] = task['ETag']
         dispatched = requests.put(self.client.baseurl + task['stepElement'],
                                   auth = self.client.cred,
-                                  params={'action':'dispatch','If-Match':etag})
+                                  params=params)        
+            
     def abort(self, task):
         
         """Receives a task, and unlocks it without saving any changes.
@@ -603,5 +639,6 @@ class PE(object):
                     new_data['attachments'][attachment][
                         'value'] = document
         return new_data
-client = PEClient('ecmlnx','9080','p8sadsv','copasa')
-pe = PE(client)
+"""
+Criar metodo para atualizar steps
+"""

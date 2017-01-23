@@ -329,8 +329,17 @@ class PE(object):
         self.info = {}
         self.__iterDictionary(task)        
         return self.info
+
+    def getStepResponses(self, task):        
+        step = requests.get(self.client.baseurl
+                                    + task['stepElement'],
+                                    auth = self.client.cred).json()
+        responses = step['systemProperties']['responses']
+        return responses
         
-    def endTask(self, task, comment=None):
+   
+        
+    def endTask(self, task, comment=None, response=None):
         
         """Receives a task and finishes it, finishing the workflow itself.
         Usage:
@@ -400,6 +409,27 @@ class PE(object):
         else:
             return "User not Found"
         return users
+    
+    def getGroup(self, search_string):
+        """Receives a string and looks for it in directory service. If the
+        string search isn't found, the message "Group not Found" will be
+        returned, otherwise a list with all matching cases, limited to 50
+        results will be returned.
+        Usage:
+        >>> users = pe.getGroup('group_name')
+        """        
+        
+        groups = []
+        group = requests.get(self.client.baseurl+'groups',
+                            auth=self.client.cred,
+                            params={'searchPattern':search_string,
+                                    'searchType':4, 'limit':3000})
+        if group.json().get('groups'):
+            for grp in group.json()['groups']:
+                groups.append(grp['displayName'])
+        else:
+            return "Group not Found"
+        return groups
         
     def startWorkflow(self, **kwargs):
         
@@ -573,3 +603,5 @@ class PE(object):
                     new_data['attachments'][attachment][
                         'value'] = document
         return new_data
+client = PEClient('ecmlnx','9080','p8sadsv','copasa')
+pe = PE(client)

@@ -113,6 +113,10 @@ inbox_queue.get('count')
 - Unlocks the task without saving any modifications, 
 - Finishing the task,
 - Starting (Launching) a Workflow,
+- Retrieve a Step from a task,
+- Retrieve required data from a Step,
+- Retrieve responses,
+- Updating a Task,
 
 ##Showing information from tasks:
 *You can iterate tasks:*
@@ -309,6 +313,59 @@ As shown rigth above, starting (lauching) a workflow relies on many variables. T
 
 Any other attribute depends on the Workflow's settings.
 
+##Retrieve a Step from a task:
+As explained before, a task is the final object in a queue. A group of tasks are called queue. Steps therefore, are the objects inside a task, meaning a task is formed from a group of steps. A step works like the Lauch Step so is possible to interact with steps, setting values, making choices like when creating a workflow. 
+To get a step issue a *task* must be passed like:
+```python
+step = pe.getStep(task)
+```
+Each step then will have specifc needs and may or maynot have options that needs attetion.
+
+##Retrieve required data from a Step:
+Usually, steps might have:
+- Data Fields,
+- Workflow Groups,
+- Attachments Field,
+- Responses.
+
+The three first options works just the same way as when starting a Workflow. In steps they have different permissions they might have *read* or *read and write* permissions.
+***Responses*** though are only available on steps and are used to offer users choices within a task, like "Approve" or "Reject".
+When retrieving information from a step, only the *writables* will be returned.
+Usage:
+```python
+step_info = pe.getStepInfo(task)
+```
+By printing the *step_info* variable, a dictionary like the one below will be shown:
+```python
+{'Available Data Fields': [u'Licence_Plate'], 'attachments': [u'References'], 'selectedResponse': [u'Approve', u'Reject']}
+```
+For the above example, for going to the next step in the task it is required to choose between *Approve* and *Reject*, theese are the available **Responses**. A value for **Licence_Plate** will also be required.
+Also, for this example *References* is a field that allows user to attach a document, but are not required.
+
+##Retrieve Resposes:
+It is possible to directly check if there are responses for the task:
+```python
+responses = pe.getResponses(task)
+```
+A list with all available responses will be returned. The response name in this list will be used as value for the attribute *selectedResponse*
+
+##Updating a Task:
+As explained in this documentation, for moving to the next "step" in a task, just use the **"endTask()"** method. When a task has *responses* though an exception will be raised. **(to be applied in next Version, right now the message *"This task needs to be updated. Check the updateTask method."* will be returned)**.
+If everything is ok, the updated task will be returned. 
+Based in the above example, do as follows:
+```python
+task = pe.updateTask(task, selectedResponse='Approve', Licence_Plate='Pyth-0000')
+```
+*When the step has "reponses" the **selectedResponse** attribute must be provided, like the "wf_name" for starting workflow.*
+*The type for passed value for data fields, must match the expected type in the workflow, otherwise a exception will be raised.*
+In the example Licence_Plate is set in workflow as a string, so a string must be passed here.
+
+###Updating Datetime Fields:
+**For next version some validation from datetime fields will be applied**
+**It will be required a datetime object**
+
+Now, the updated task can be used with the **"endTask(updatedTask)"**
+
 ##Notes on this program:
 Obviously there are many things to improve at this API (and probably some bugs). Yet, at the state it is now, I do believe it can be shared, since I've already used it to implement at least other trhee different applications and they are working just fine.
 
@@ -337,6 +394,11 @@ There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/
 - Added functionality for returning a task to it's original workbasket.
 
 ###Version 1.2.0: 
-- Created functionality  for seraching users in Directory Service .
+- Created functionality for searching Users in Directory Service.
 - Now the user is validated before a task can be reassigned.
+
+###Version 1.3.0: 
+- Created functionality for searching Groups in Directory Service.
+- Created functionality for updating values in steps.
+- 
 

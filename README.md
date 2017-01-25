@@ -399,6 +399,4 @@ There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/
 
 ###Version 1.3.0: 
 - Created functionality for searching Groups in Directory Service.
-- Created functionality for updating values in steps.
-- 
-
+- Created functionality for updating values and selecting available responses in steps.

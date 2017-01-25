@@ -1,13 +1,14 @@
 #encoding=utf-8
 """
 Process Engine Python API.
-fnetpepAPI: version 1.2.0
+fnetpepAPI: version 1.3.0
 copyright: (c) 2016 by Wanderley Souza.
 license: Apache2, see LICENSE for more details.
 """
 
 import requests
 from requests.auth import HTTPBasicAuth
+from datetime import datetime
 
 class PEClient(object):
     
@@ -35,7 +36,8 @@ class PEClient(object):
         self.__getWorkFlowNames()
         self.__getQueues()
 
-    def __getAppSpaces(self):        
+    def __getAppSpaces(self):
+        
         """Returns a list with the name of availables appspaces on FileNet,
         to apps variable.
         """        
@@ -52,6 +54,7 @@ class PEClient(object):
             self.apps =  appspaces.json()
         
     def __getRoles(self):
+        
         """Returns a dictionary with role names and it's queues to a roles
         variable.
         """
@@ -63,6 +66,7 @@ class PEClient(object):
         self.roles = roles
     
     def __getWorkFlowNames(self):
+        
         """Sets all available WorkFlows into workflow_classes variable.
         """
         workflow_names = requests.get(self.baseurl+'workclasses',
@@ -70,6 +74,7 @@ class PEClient(object):
         self.workflow_classes = workflow_names 
     
     def __getQueues(self):
+        
         """Creates a list with URL adresses from workbaskets. Also creates a
         dictionary with workbasket name as key and it's URL as value.
         """
@@ -88,7 +93,8 @@ class PEClient(object):
                                 self.workbaskets[uri['URI'].split(
                                     '/')[-1]] = uri['URI']
                                 
-    def getLoggedUserInfo(self):        
+    def getLoggedUserInfo(self):
+        
         """Returns a dictionary with logged user information.
         Available information are: email, displayName, id and name
         Usage:
@@ -112,6 +118,7 @@ class PE(object):
         self.apps = client.apps       
         
     def getInboxQueue(self):
+        
         """Returns the User's Inbox Queue.
         Usage:
         >>> inbox = pe.getInboxQueue()
@@ -129,6 +136,7 @@ class PE(object):
         return queue
     
     def getQueue(self, work_basket):
+        
         """Returns a Queue for a given Workbasket.
         Usage:
         >>> my_queue = pe.getQueue('workbasket_name')
@@ -145,6 +153,7 @@ class PE(object):
         return queue
 
     def getAllTasks(self):
+        
         """Returns all tasks from all Queues.
         Usage:
         >>> tasks = pe.getAllTasks()
@@ -160,7 +169,8 @@ class PE(object):
                 tasks.append(found_tasks)
         return [tsk for task in tasks for tsk in task]
 
-    def getTasks(self, queue):        
+    def getTasks(self, queue):
+        
         """Returns a dictionary with all tasks for the given queue.
         A queue object is required.
         Usage:
@@ -330,56 +340,142 @@ class PE(object):
         self.__iterDictionary(task)        
         return self.info
 
-    def getStepResponses(self, task):        
+    def getResponses(self, task):
+        """Given a task, this method will return the available responses
+        for the current step in the task. Responses are options set in
+        steps. They are usually required for passing from one step to next one.
+        Usage:
+        >>> responses = pe.getResponses(task)
+        """
         step = requests.get(self.client.baseurl
                                     + task['stepElement'],
                                     auth = self.client.cred).json()
         responses = step['systemProperties']['responses']
         return responses
+    
+    def getStep(self, task):
+        """Given a task, this method will return the current step. A task
+        is composed by steps. Some step might require data to be provided.
+        Usage:
+        >>> current_step = pe.getStep(task)
+        """
+        step = requests.get(self.client.baseurl+task['stepElement'],
+                            auth = self.client.cred).json()
+        return step
+    
+    def getStepInfo(self, task):
+        """Given a task, this method will return all the available options
+        that are possible to interact with, within the current step.
+        Example used with "ICNSequentialDocumentApproval" workflow.
+        Usage:
+        >>> step_info = pe.getStepInfo(task)
+        >>> print step_info
+        {'Available Data Fields': [u'ICN_AllowReassign', u'ICN_Instructions'],
+        'attachments': [u'DocumentforReview', u'References'],
+        'selectedResponse': [u'Approve', u'Reject']}
+        """
+        step_info = {}
+        step = requests.get(self.client.baseurl+task['stepElement'],
+                            auth = self.client.cred).json()
+        if step.get('systemProperties').get('responses'):
+            step_info['selectedResponse'] = step['systemProperties']['responses']
+        if step.get('workFlowGroups'):
+            step_info['workFlowGroups'] = step.get('workFlowGroups')
+        if step.get('attachments'):
+            step_info['attachments'] = step.get('attachments').keys()
+        if step.get('dataFields'):
+            step_info['Available Data Fields'] = [k for
+                                                  k, v in
+                                                  step.get('dataFields').items()
+                                                  if v['mode'] != 1]
 
-    def setStepResponse(self, task, response):        
-        etag = task['ETag']
+        return step_info   
+    
+    def updateTask(self, task, **kwargs):
+        """Some steps might require some data to be filled in, so the task can
+        go through other steps to it's end. Usually it is possible to:
+            - Add users to a workflow group,
+            - Add attachments,
+            - Add values for data fields,
+            - Choose between available responses.
+        When updating a task, you must provide required data. Since each step
+        has specific needs, use "getStepInfo" method to show available options.
+        If there is a type mismatch between the informed value for a data
+        field and the expected value type, an exception will be thrown.        
+        Example updating a task for the "ICNSequentialDocumentApproval" sample
+        workflow provided by IBM:
+        Usage:
+        >>> task = pe.updateTask(task, selectedResponse='Approve')
+        """
+        #hoje.isoformat().split('.')[0]+'Z'
+        #data = datetime.strptime('20170125094200', '%Y%m%d%H%M%S')
+        #2017-01-23T16:54:21Z
+        data_types = {1:type(int()),
+                      2:type(str()),
+                      16:type(datetime.today())}
+        
+        etag = task['ETag']       
+        step = requests.get(self.client.baseurl+task['stepElement'],
+                            auth = self.client.cred)
+        url = step.url
+        step = step.json()
+        message = "Task updated"
+        
+        for field in step.get('dataFields'):            
+            if field in kwargs.keys():
+                if step['dataFields'][field]['mode'] != 1:                  
+                    step['dataFields'][field]['value'] = kwargs[field]
+                    step['dataFields'][field]['modified'] = True
+
+
+        for response in step.get('systemProperties').get('responses'):
+            if response in kwargs.values():
+                step['systemProperties']['selectedResponse'] = kwargs[
+                    'selectedResponse']
+        
+        self.lockTask(task)
+        
+        unlocked = requests.put(url, auth = self.client.cred,
+                                        params = {'action':'saveAndUnlock',
+                                                  'If-Match':etag},
+                                        json = step)        
         try:
-            step = requests.get(self.client.baseurl+ task['stepElement'],
-                                auth = self.client.cred)
-            updatedJson = step.json()
-            updatedJson['systemProperties']['selectedResponse'] = response
-            self.lockTask(task)
-            unlocked = requests.put(step.url, auth = self.client.cred,
-                                    params = {'action':'saveAndUnlock',
-                                              'If-Match':etag},
-                                    json = updatedJson)
-
-            for k, v in self.client.workbaskets.items():
-                if task.get('queueName') in v:
-                    queue = self.getQueue(v.split('/')[-1])
-                    tasks = self.getTasks(queue)
-                    for newtask in tasks:
-                        if newtask['workObjectNumber'] == task['workObjectNumber']:
-                            task = newtask
-                            break
+            unlocked.raise_for_status()
+            
         except Exception as e:
             self.abort(task)
+            raise RuntimeError(str(e)+'\n'+unlocked.text)
+            
+        
+        for k, v in self.client.workbaskets.items():
+            if task.get('queueName') in v:
+                queue = self.getQueue(v.split('/')[-1])
+                tasks = self.getTasks(queue)
+                for newtask in tasks:
+                    if newtask['workObjectNumber'] == task['workObjectNumber']:
+                        task = newtask
+                        break
         return task
-   
         
-    def endTask(self, task, comment=None, response=None):
-        
-        """Receives a task and finishes it, finishing the workflow itself.
+    def endTask(self, task, comment=None):        
+        """Receives a task and finishes it, finishing the workflow itself or
+        moving to the next step in the task. Is also possible to create a
+        comment before ending the task.
         Usage:
-        >>> pe.endTask(task)
+        >>> pe.endTask(task) #or
+        >>> pe.endTask(task, u'Completed the task!')
+        
         """
-        reponses = self.getStepResponses(task)
-        if responses and not response:
-            return "A response must be passed"
         params = {'action':'dispatch'}
+        step = self.getStep(task)
+        if step.get('systemProperties').get('responses')\
+           and not step.get('systemProperties').get('selectedResponse'):
+            return "This task needs to be updated. Check the updateTask method."
+        else:
+            params['selectedResponse'] = 1           
+        
         if comment:
             task = self.saveAndUnlockTask(task, comment)
-        if response:
-            params['selectedResponse'] = 1
-            task = self.setStepResponse(task, response)        
-            params['If-Match'] = task['ETag']
-
      
         lock = self.lockTask(task)
         params['If-Match'] = task['ETag']
@@ -467,8 +563,7 @@ class PE(object):
             return "Group not Found"
         return groups
         
-    def startWorkflow(self, **kwargs):
-        
+    def startWorkflow(self, **kwargs):        
         """Starting a new workflow is kind of a complex process,
         since the previously created workflow will determine with data must
         be set before it can be launched. Usually aside data, it is also needed
@@ -639,6 +734,3 @@ class PE(object):
                     new_data['attachments'][attachment][
                         'value'] = document
         return new_data
-"""
-Criar metodo para atualizar steps
-"""

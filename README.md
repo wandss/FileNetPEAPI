@@ -204,11 +204,11 @@ pe.endTask(task, u'Any comment you like') #comment passed.
 Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and settings.
 It is possible to have a workflow that needs a destination user to be set and others that already has a specified destinated user.
 Sometimes, when creating a workflow, there might be some datafields to be filled in or documents to be attached at launch step.
-There are many possibilities here and eache one of them depends on the workflow itself.
+There are many possibilities here and each one of them depending on the workflow itself.
 
 So, since each Workflow has its needs, the first thing is to understand what are the needs from that workflow, to do this run:
 ```python
-launchstep = pe.startWorkflow(wf_name = 'WorkFlowName')
+launched = pe.startWorkflow(wf_name = 'WorkFlowName')
 ```
 *You must run this with the wf_name property. Not doing so, will return the message:*
 **"There's no 'wf_name' key on dictionary or the WorkFlow name doesn't exist."**
@@ -309,6 +309,7 @@ launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             object_store='ObjectStoreName', subject="New Document for review"
                             )
 ```
+If no exceptions were raised, the **launched** variable will now have the Workflow Number (wobnum).
 ***Only documents available in FileNet repository can be attached, therefore the ID for this document must be passed here. It is also required to pass the object_store key with the desired 'ObjectStoreName'
 It is also available to set a subject for this Workflow by passing the parameter subject, with any string you like as value.***
 
@@ -410,3 +411,6 @@ There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/
 ###Version 1.3.0: 
 - Created functionality for searching Groups in Directory Service.
 - Created functionality for updating values and selecting available responses in steps.
+
+####Version 1.3.1: 
+- When starting a workflow, now the **"startWorkflow()"** method will raise an exception for errors or return the number for the started Workflow **(Work Object Number - WobNum)**

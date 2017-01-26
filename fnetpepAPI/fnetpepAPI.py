@@ -1,7 +1,7 @@
 #encoding=utf-8
 """
 Process Engine Python API.
-fnetpepAPI: version 1.3.0
+fnetpepAPI: version 1.3.1
 copyright: (c) 2016 by Wanderley Souza.
 license: Apache2, see LICENSE for more details.
 """
@@ -407,9 +407,6 @@ class PE(object):
         Usage:
         >>> task = pe.updateTask(task, selectedResponse='Approve')
         """
-        #hoje.isoformat().split('.')[0]+'Z'
-        #data = datetime.strptime('20170125094200', '%Y%m%d%H%M%S')
-        #2017-01-23T16:54:21Z
         data_types = {1:type(int()),
                       2:type(str()),
                       16:type(datetime.today())}
@@ -669,7 +666,9 @@ class PE(object):
                                     + wf_name+'/wob/'
                                     + wobnum, auth=self.client.cred,
                                     json=new_data, params={'POE':'1'})
-            return started           
+            started.raise_for_status()
+            
+            return started.split('\\')[-1].strip('/').strip('}')[:-1]
         return work_class
 
     def __showAvailableWorkClassOpt(self, work_class):

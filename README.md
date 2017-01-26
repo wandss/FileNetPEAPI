@@ -107,6 +107,7 @@ inbox_queue.get('count')
 - Show comments, 
 - Add comment to a task, 
 - Search Directory service for users,
+- Search Directory service for groups,
 - Reassign a task to other user, 
 - Returning a task to the it's original Workbasket,
 - Locks a task, so other users can’t interact with it while you're working, 
@@ -149,13 +150,18 @@ print comment
 ```python
 task = pe.saveAndUnlockTask(task, u'This is a Comment')
 ```
-*Important: When adding a comment, the updated task will be returned. Also important, to avoid issues with special characters, 
-prefer passing unicoded text (u'Text') and not pure string objects.*
+*Important: When adding comments, the updated task will be returned. Also important, to avoid issues with special characters, 
+prefer use **unicoded text (u'Text')** and not pure string objects.*
 ##Search Directory Service for users:
 *Given a string the API will return a list with users who match the passed string or a message informing that the User wasn't found.*
 ```python
 user = pe.getUser('username')
 print user
+```
+##Search Directory Service for groups:
+*Given a string the API will return a list with groups that match the passed string or a message informing that the User wasn't found.*
+```python
+group = pe.getGroup('group_name')
 ```
 
 ##Reassigning a task:
@@ -168,7 +174,7 @@ reassign = pe.reassignTask(task, 'new_user')
 reassign = pe.reassignTask(task, 'new_user', u'Hello. Your attention is required for the attached Document!')
 print reassign
 ```
-*When reassigning a task, the destination user will be checked (added on version 1.2.0) on the Directory Service. If the user is not found a message informing that the User wans't found will be returned to the "reassign" variable as showed above.*
+*When reassigning a task, the destination user will be checked (added on version 1.2.0) on the Directory Service. If the user is not found, a message informing that will be returned to the "reassign" variable as showed above.*
 ```python
 reassign = pe.reassignTask(task, 'new_user')
 print reassign
@@ -262,7 +268,7 @@ DocumentforReview
 ```
 - Approvers
 ```
-*This is a group to be populated with one or many users.*
+*This is a group to be populated with one, many users or directory groups.*
 ```
 - DocumentforReview
 ```
@@ -279,8 +285,9 @@ launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='
 launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2' )
 ```
-*To send for more than one user, write user_names separated by ', ' comma and space like:*
+*To send for more than one user, write user_names separated by ', ' (comma and space) like:*
 **Approvers = 'user1, user2, ..., userX'**
+*It is also possible to use Directory Groups as parameter*
 
 ####Setting users and values for data field:
 ```python
@@ -337,7 +344,8 @@ step_info = pe.getStepInfo(task)
 ```
 By printing the *step_info* variable, a dictionary like the one below will be shown:
 ```python
-{'Available Data Fields': [u'Licence_Plate'], 'attachments': [u'References'], 'selectedResponse': [u'Approve', u'Reject']}
+{'Available Data Fields': [u'Licence_Plate'], 'attachments': [u'References'], 
+'selectedResponse': [u'Approve', u'Reject']}
 ```
 For the above example, for going to the next step in the task it is required to choose between *Approve* and *Reject*, theese are the available **Responses**. A value for **Licence_Plate** will also be required.
 Also, for this example *References* is a field that allows user to attach a document, but are not required.

@@ -352,7 +352,7 @@ By printing the *step_info* variable, a Python dictionary like the one below wil
 For the above example, for going to the next step in the task, it is required to choose between *Approve* and *Reject*, theese are the available **Responses**. A value for **Licence_Plate** will also be needed, but not required.
 Also, for this example *"References"* is a field that allows user to attach a document, but are not required.
 
-##Retrieve Resposes:
+##Retrieve Responses:
 It is possible to directly check if there are responses for the task:
 ```python
 responses = pe.getResponses(task)

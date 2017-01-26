@@ -668,7 +668,7 @@ class PE(object):
                                     json=new_data, params={'POE':'1'})
             started.raise_for_status()
             
-            return started.split('\\')[-1].strip('/').strip('}')[:-1]
+            return started.text.split('\\')[-1].strip('/').strip('}')[:-1]
         return work_class
 
     def __showAvailableWorkClassOpt(self, work_class):

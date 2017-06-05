@@ -152,7 +152,7 @@ task = pe.saveAndUnlockTask(task, u'This is a Comment')
 ```
 *Important: When adding comments, the updated task will be returned. Also important, to avoid issues with special characters, 
 prefer use **unicoded text (u'Text')** and not pure string objects.*
-##Search Directory Service for users:
+## Search Directory Service for users:
 *Given a string the API will return a list with users who match the passed string or a message informing that the User wasn't found.*
 ```python
 user = pe.getUser('username')

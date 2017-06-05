@@ -17,7 +17,7 @@ This API requires [Requests](https://github.com/kennethreitz/requests) by Kennet
 
 **- At this point, this API is only working with Python2 version.**
 
-##Installing the fnetpepAPI:
+## Installing the fnetpepAPI:
 Download this package or run:
 ```shell
 git clone https://github.com/wandss/FileNetPEAPI.git
@@ -28,11 +28,11 @@ python setup.py build
 python setup.py install
 ```
 
-##Running the API:
+## Running the API:
 ```python
 from fnetpepAPI.fnetpepAPI import PEClient, PE
 ```
-###To create a "connection":
+### To create a "connection":
 ```python
 client = PEClient('server_name', 'server_port', 'user', 'passwd')
 ```
@@ -40,36 +40,36 @@ client = PEClient('server_name', 'server_port', 'user', 'passwd')
 
 With this instance of PEClient is possible to check some variables like:
 
-####Available App Spaces:
+#### Available App Spaces:
 *Prints appspace names*
 ```python
 apps = client.apps
 print apps
 ```
-####Available Workbasket:
+#### Available Workbasket:
 *Prints a list with Workbasket names.*
 ```python
 wbs = client.workbaskets.keys()
 print wbs
 ```
-####Available Roles:
+#### Available Roles:
 *Prints a python dictionary with Appspace and its roles*
 ```python
 roles = client.roles
 print roles
 ```
-####Available Workflow:
+#### Available Workflow:
 *Prints available workflow names*
 ```python
 wf_names = client.workflow_classes.keys()
 print wf_names
 ```
-###Now, create a "PE" object:
+### Now, create a "PE" object:
 To do so, is required to pass an **instance from PEClient**.
 ```python
 pe = PE(client)
 ```
-###With a PE object is possible to retrieve information from a workbasket and manage tasks:
+### With a PE object is possible to retrieve information from a workbasket and manage tasks:
 
 *Get all tasks from all Workbaskets:*
 ```python
@@ -101,7 +101,7 @@ inbox_tasks = pe.getTasks(inbox_queue)
 ```python
 inbox_queue.get('count')
 ```
-###Tasks are the final objects from a Queue. Is possible to interact with them and doing the following actions:
+### Tasks are the final objects from a Queue. Is possible to interact with them and doing the following actions:
 
 - Show information from documents attached to the task,
 - Show comments, 
@@ -119,7 +119,7 @@ inbox_queue.get('count')
 - Retrieve responses,
 - Updating a Task,
 
-##Showing information from tasks:
+## Showing information from tasks:
 *You can iterate tasks:*
 ```python
 for task in tasks:      
@@ -146,7 +146,7 @@ for k, v in attached_doc.items():
 comment = pe.getComment(task)
 print comment
 ```
-##Adding comment to a task:
+## Adding comment to a task:
 ```python
 task = pe.saveAndUnlockTask(task, u'This is a Comment')
 ```
@@ -158,13 +158,13 @@ prefer use **unicoded text (u'Text')** and not pure string objects.*
 user = pe.getUser('username')
 print user
 ```
-##Search Directory Service for groups:
+## Search Directory Service for groups:
 *Given a string the API will return a list with groups that match the passed string or a message informing that the User wasn't found.*
 ```python
 group = pe.getGroup('group_name')
 ```
 
-##Reassigning a task:
+## Reassigning a task:
 *To reassign a task, a destination user must be informed:*
 ```python
 reassign = pe.reassignTask(task, 'new_user')
@@ -184,14 +184,14 @@ print reassign
 ```python
 pe.abort(task)
 ```
-##Returning a task to it's original Workbasket:
+## Returning a task to it's original Workbasket:
 *If a task has been moved between workbaskets (queues) or moved from one workbasket to user's Inbox, is possible sending it back to it's original workbasket. It is also allowed to insert a comment before sending it back.
 A task must be passed. If the task can't be moved back to it's original workbasket or if it already is there, a message informing this will be returned.*
 ```python
 pe.returnToSoruce(task) #no comment
 pe.returnToSource(task, "Here some explanatory message")
 ```
-##Finishing a task:
+## Finishing a task:
 *Finishing a task is the same of finishing a step. If the step is the last of the workflow, the workflow might be finished.
 It is also possible to pass a comment before finishing the step*
 ```python
@@ -200,7 +200,7 @@ pe.endTask(task) #no comment passed.
 ```python
 pe.endTask(task, u'Any comment you like') #comment passed.
 ```
-##Starting (Launching) a Workflow:
+## Starting (Launching) a Workflow:
 Starting (launching) a worflow could be a little bit complex, since each workflow is created with specific needs and settings.
 It is possible to have a workflow that needs a destination user to be set and others that already has a specified destinated user.
 Sometimes, when creating a workflow, there might be some datafields to be filled in or documents to be attached at launch step.
@@ -225,7 +225,7 @@ Usually IBM packages two basic "Document Approval" sample workflows within FileN
 - ICNSequentialDocumentApproval,
 - ICNParallelDocumentApproval
 
-##Practical example:
+## Practical example:
 *When running:*
 ```python
 launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval')
@@ -274,13 +274,13 @@ DocumentforReview
 ```
 *Finally, this is the field to be used when attaching a document.*
 
-###Samples for starting this specific workflow:
-####Sending to one user:
+### Samples for starting this specific workflow:
+#### Sending to one user:
 ```python
 launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval', Approvers='destinated_user' )
 ```
 *Only informed one destination user.*
-####Sending to more users:
+#### Sending to more users:
 ```python
 launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2' )
@@ -289,7 +289,7 @@ launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
 **Approvers = 'user1, user2, ..., userX'**
 *It is also possible to use Directory Groups as parameter*
 
-####Setting users and values for data field:
+#### Setting users and values for data field:
 ```python
 launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2',
@@ -300,7 +300,7 @@ launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
 ***When using Data Fields, the type passed for the value here must match the type written in workflow.
 In the above example "ICN_AllowReassign" was created in workflow as a boolean type, so here we must match the same type by passing True (boolean type) and not 'True'(string type)***
 
-####Setting users, values for data field and attaching a document:
+#### Setting users, values for data field and attaching a document:
 ```python
 launched = pe.startWorkflow(wf_name='ICNSequentialDocumentApproval',
                             Approvers='destinated_user1, destinated_user2', 
@@ -315,13 +315,13 @@ It is also available to set a subject for this Workflow by passing the parameter
 
 As shown rigth above, starting (lauching) a workflow relies on many variables. Therefore is important to know the workflow that's about to be started.
 
-###Commum atributes for any workflows are:
+### Commum atributes for any workflows are:
 - wf_name **(required)**
 - subject
 
 Any other attribute depends on the Workflow's settings.
 
-##Retrieve a Step from a task:
+## Retrieve a Step from a task:
 As explained before, a task is the final object in a queue. A group of tasks are called queue. Steps therefore, are the objects inside a task, meaning a task is formed from a group of steps. A step works like the Lauch Step so is possible to interact with steps, setting values, making choices like when creating a workflow. 
 
 To get a step a *task* must be passed like:
@@ -330,7 +330,7 @@ step = pe.getStep(task)
 ```
 Each step has it's specifc needs and may or may not have options that needs attention.
 
-##Retrieve required data from a Step:
+## Retrieve required data from a Step:
 Usually, steps might have:
 - Data Fields,
 - Workflow Groups,
@@ -353,14 +353,14 @@ By printing the *step_info* variable, a Python dictionary like the one below wil
 For the above example, for going to the next step in the task, it is required to choose between *Approve* and *Reject*, theese are the available **Responses**. A value for **Licence_Plate** will also be needed, but not required.
 Also, for this example *"References"* is a field that allows user to attach a document, but are not required.
 
-##Retrieve Responses:
+## Retrieve Responses:
 It is possible to directly check if there are responses for the task:
 ```python
 responses = pe.getResponses(task)
 ```
 A list with all available responses will be returned. The response name in this list will be used as value for the attribute *selectedResponse* when updating the task.
 
-##Updating a Task:
+## Updating a Task:
 As explained in this documentation, for moving to the next "step" in a task, just use the **"endTask()"** method. When a task has *responses* though, an exception will be raised. **(to be applied in next Version, right now the message *"This task needs to be updated. Check the updateTask method."* will be returned)**.
 If everything is ok, the updated task will be returned. 
 Based in the above example, do as follows:
@@ -371,13 +371,13 @@ task = pe.updateTask(task, selectedResponse='Approve', Licence_Plate='Pyth-0000'
 *The value set for attributes in for data fields, must match the expected type in the workflow, otherwise a exception will be raised.*
 In the example "Licence_Plate" is set in workflow as a string, so a string must be passed here.
 
-###Updating Datetime Fields:
+### Updating Datetime Fields:
 **In the next version, some validation for datetime fields will be applied**
 **It will be required a datetime object**
 
 Now, the updated task can be used with the **"endTask(task)"**
 
-##Notes on this program:
+## Notes on this program:
 Obviously there are many things to improve at this API (and probably some bugs). Yet, at the state it is now, I do believe it can be shared, since I've already used it to implement at least other trhee different applications and they are working just fine.
 
 As metionend at the top of this document, this API (untill now) will only work with Python 2.x versions.
@@ -396,21 +396,21 @@ Open CMIS works with most of CMIS Compliant Repository, therefore is possible to
 To use Open CMIS with FileNet is required to have IBM CMIS installed.
 There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/developerworks/library/x-cmis1/)
 
-##About Versions:
+## About Versions:
 
-###Version 1.0.0: 
+### Version 1.0.0: 
 - Initial version.
 
-###Version 1.1.0: 
+### Version 1.1.0: 
 - Added functionality for returning a task to it's original workbasket.
 
-###Version 1.2.0: 
+### Version 1.2.0: 
 - Created functionality for searching Users in Directory Service.
 - Now the user is validated before a task can be reassigned.
 
-###Version 1.3.0: 
+### Version 1.3.0: 
 - Created functionality for searching Groups in Directory Service.
 - Created functionality for updating values and selecting available responses in steps.
 
-####Version 1.3.1: 
+#### Version 1.3.1: 
 - When starting a workflow, now the **"startWorkflow()"** method will raise an exception for errors or return the number for the started Workflow **(Work Object Number - WobNum)**

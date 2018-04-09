@@ -389,7 +389,7 @@ class PE(object):
         workflow provided by IBM:
         Usage:
         >>> task = pe.updateTask(task, selectedResponse='Approve')
-        NEWW:It is also possible to pass in an updated step object, instead of
+        Is also possible to pass in an updated step object, instead of
         updating each separated data. To do so, specify a "new_step" variable as
         a key to a dictionary like so:
         Usage:

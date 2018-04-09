@@ -1,7 +1,7 @@
 #encoding=utf-8
 """
 Process Engine Python API.
-fnetpepAPI: version 1.3.1
+fnetpepAPI: version 1.3.2
 copyright: (c) 2016 by Wanderley Souza.
 license: Apache2, see LICENSE for more details.
 """
@@ -389,7 +389,7 @@ class PE(object):
         workflow provided by IBM:
         Usage:
         >>> task = pe.updateTask(task, selectedResponse='Approve')
-        NEW!!!:It is also possible to pass in an updated step object, instead of
+        NEWW:It is also possible to pass in an updated step object, instead of
         updating each separated data. To do so, specify a "new_step" variable as
         a key to a dictionary like so:
         Usage:
@@ -727,7 +727,3 @@ class PE(object):
                     new_data['attachments'][attachment][
                         'value'] = document
         return new_data    
-"""
-Update the updateTask so it is possible pass in a whole
-new step object kwargs={new_ste:step}
-"""

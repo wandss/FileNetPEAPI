@@ -11,7 +11,6 @@ from requests.auth import HTTPBasicAuth
 from datetime import datetime
 
 class PEClient(object):
-    
     """Receives a server address, port number, login and password
     for connecting to IBM FileNet Process Engine over IBM's REST API
     and creates the base object for interacting with Process Engine.
@@ -24,7 +23,6 @@ class PEClient(object):
     >>> client.workbaskets.keys()-> Dictionary with available Workbaskets
     >>> client.workflow_classes.keys() -> Dictionary with Workflows.
     """
-    
     def __init__(self, server, port, user, passwd):
         self.baseurl = 'http://%s:%s/peengine/P8BPMREST/p8/bpm/v1/'%(server,
                                                                      port)
@@ -34,47 +32,42 @@ class PEClient(object):
         self.__getAppSpaces()
         self.__getRoles()
         self.__getWorkFlowNames()
-        self.__getQueues()
+        self.__getQueues()        
 
     def __getAppSpaces(self):
-        
         """Returns a list with the name of availables appspaces on FileNet,
         to apps variable.
-        """        
+        """
         try:
             appspaces = requests.get(self.baseurl+'appspacenames',
                                      auth=self.cred)
             appspaces.raise_for_status()
-            self.appspaces = appspaces.json()            
-            self.apps = appspaces.json().keys()
-            
+            self.appspaces = appspaces.json()
+            self.apps = [*appspaces.json().keys()]
+
         except Exception as e:
-            print (str(e)+':\n'+str(appspaces.json()['UserMessage']['Text']))
-            print (appspaces.json())
+            print(str(e)+':\n'+str(appspaces.json()['UserMessage']['Text']))
+            print(appspaces.json())
             self.apps =  appspaces.json()
-        
+
     def __getRoles(self):
-        
         """Returns a dictionary with role names and it's queues to a roles
         variable.
         """
         roles = {}
         for a in self.apps:
-            url = self.appspaces[a]['rolenames']            
-            role = requests.get(self.baseurl+url, auth=self.cred)            
-            roles[a] = role.json().keys()
+            url = self.appspaces[a]['rolenames']
+            role = requests.get(self.baseurl+url, auth=self.cred)
+            roles[a] = [*role.json().keys()]
         self.roles = roles
-    
+
     def __getWorkFlowNames(self):
-        
         """Sets all available WorkFlows into workflow_classes variable.
         """
         workflow_names = requests.get(self.baseurl+'workclasses',
-                                      auth=self.cred).json()        
-        self.workflow_classes = workflow_names 
-    
+                                      auth=self.cred).json()
+        self.workflow_classes = workflow_names
     def __getQueues(self):
-        
         """Creates a list with URL adresses from workbaskets. Also creates a
         dictionary with workbasket name as key and it's URL as value.
         """
@@ -89,41 +82,33 @@ class PEClient(object):
                                                auth = self.cred)
                         if my_role.ok:                            
                             for uri in my_role.json()['workbaskets'].values():
-                                self.queue_urls.append(uri['URI'])                                
+                                self.queue_urls.append(uri['URI'])
                                 self.workbaskets[uri['URI'].split(
                                     '/')[-1]] = uri['URI']
-                                
     def getLoggedUserInfo(self):
-        
         """Returns a dictionary with logged user information.
         Available information are: email, displayName, id and name
         Usage:
         >>> user_info = client.getLoggedUserInfo()
         """
-        
         self.userinfo = requests.get(self.baseurl+'currentuser',
                                      auth=self.cred).json()
-        return self.userinfo                                
+        return self.userinfo
 
-    
 class PE(object):
-    
     """Creates a PE object. An instance from PEClient must be passed.
     Usage:
     >>> pe = PE(client)
     """
-    
     def __init__(self, client):
         self.client = client
-        self.apps = client.apps       
-        
+        self.apps = client.apps
     def getInboxQueue(self):
-        
         """Returns the User's Inbox Queue.
         Usage:
         >>> inbox = pe.getInboxQueue()
         >>> inbox.get('count') -> Variable with the total tasks in this Queue.
-        """        
+        """
         work_basket = requests.get(self.client.baseurl+'queues/'
                                         +'Inbox'
                                         +'/workbaskets/'
@@ -131,18 +116,15 @@ class PE(object):
                                         auth = self.client.cred)
         count = requests.get(work_basket.url + '/queueelements/count',
                              auth = self.client.cred).json()['count']
-        queue = work_basket.json()        
+        queue = work_basket.json()
         queue['count'] = count
         return queue
-    
     def getQueue(self, work_basket):
-        
         """Returns a Queue for a given Workbasket.
         Usage:
         >>> my_queue = pe.getQueue('workbasket_name')
         >>> my_queue.get('count')->Variable with the total tasks in this Queue.
-        """                
-        
+        """
         queue = requests.get(self.client.baseurl
                              + self.client.workbaskets.get(work_basket),
                              auth = self.client.cred)
@@ -169,7 +151,7 @@ class PE(object):
                 tasks.append(found_tasks)
         return [tsk for task in tasks for tsk in task]
 
-    def getTasks(self, queue):
+    def getTasks(self, queue, count=50):
         
         """Returns a dictionary with all tasks for the given queue.
         A queue object is required.
@@ -177,11 +159,12 @@ class PE(object):
         >>> tasks = pe.getTasks(my_queue)
 
         """
+        page_size = {'pageSize':count}
         work_items = requests.get(self.client.baseurl
                                   + queue.get('queueElements'),
-                                  auth = self.client.cred)
+                                  auth = self.client.cred, params=page_size)
         if not work_items.json():
-            print ("'%s' queue is empty!"%queue['name'])
+            print("'%s' queue is empty!"%queue['name'])
         else:
             return work_items.json()['queueElements']
 
@@ -382,7 +365,7 @@ class PE(object):
         if step.get('workFlowGroups'):
             step_info['workFlowGroups'] = step.get('workFlowGroups')
         if step.get('attachments'):
-            step_info['attachments'] = step.get('attachments').keys()
+            step_info['attachments'] = [*step.get('attachments').keys()]
         if step.get('dataFields'):
             step_info['Available Data Fields'] = [k for
                                                   k, v in
@@ -406,6 +389,11 @@ class PE(object):
         workflow provided by IBM:
         Usage:
         >>> task = pe.updateTask(task, selectedResponse='Approve')
+        NEW!!!:It is also possible to pass in an updated step object, instead of
+        updating each separated data. To do so, specify a "new_step" variable as
+        a key to a dictionary like so:
+        Usage:
+        >>> task = pe.updateTask(task, new_step=my_step)
         """
         data_types = {1:type(int()),
                       2:type(str()),
@@ -417,19 +405,23 @@ class PE(object):
         url = step.url
         step = step.json()
         message = "Task updated"
-        
-        for field in step.get('dataFields'):            
-            if field in kwargs.keys():
-                if step['dataFields'][field]['mode'] != 1:                  
-                    step['dataFields'][field]['value'] = kwargs[field]
-                    step['dataFields'][field]['modified'] = True
+
+        if 'new_step' in kwargs:
+            step = kwargs['new_step']
+
+        else:            
+            for field in step.get('dataFields'):            
+                if field in kwargs.keys():
+                    if step['dataFields'][field]['mode'] != 1:                  
+                        step['dataFields'][field]['value'] = kwargs[field]
+                        step['dataFields'][field]['modified'] = True
 
 
-        for response in step.get('systemProperties').get('responses'):
-            if response in kwargs.values():
-                step['systemProperties']['selectedResponse'] = kwargs[
-                    'selectedResponse']
-        
+            for response in step.get('systemProperties').get('responses'):
+                if response in kwargs.values():
+                    step['systemProperties']['selectedResponse'] = kwargs[
+                        'selectedResponse']
+
         self.lockTask(task)
         
         unlocked = requests.put(url, auth = self.client.cred,
@@ -677,22 +669,24 @@ class PE(object):
         before sending a Workflow.
         """
         if work_class['dataFields'].keys():
-            print ("To Create this Workflow, you'll probably need to provide\
- below data:")
+            print("To Create this Workflow, you'll probably need to provide\
+ below data:")            
             required_data[
-                'Available Data Fields:'] = work_class['dataFields'].keys()
-            print ('\n').join(work_class['dataFields'].keys())+'\n'
+                'Available Data Fields:'] = [*
+                    work_class['dataFields'].keys()]
+            
+            print('\n'.join([*work_class['dataFields'].keys()])+'\n')
             
         if work_class['workflowGroups'].keys():
             required_data['Workflow Groups:'
-                          ] = work_class['workflowGroups'].keys()
+                          ] = [*work_class['workflowGroups'].keys()]
             print("\nGroups to be populated with users:")        
-            print ('\n').join(work_class['workflowGroups'].keys())+'\n'
+            print('\n'.join([*work_class['workflowGroups'].keys()])+'\n')
 
         if work_class['attachments']:
-            required_data['Attachments:'] = work_class['attachments'].keys()
+            required_data['Attachments:'] = [*work_class['attachments'].keys()]
             print('\nAvailable Attachment Fields:')
-            print ('\n').join(work_class['attachments'].keys())+'\n'
+            print('\n'.join([*work_class['attachments'].keys()])+'\n')
 
         return required_data
 
@@ -732,4 +726,8 @@ class PE(object):
                                 u'desc':u''}                    
                     new_data['attachments'][attachment][
                         'value'] = document
-        return new_data
+        return new_data    
+"""
+Update the updateTask so it is possible pass in a whole
+new step object kwargs={new_ste:step}
+"""

@@ -93,9 +93,14 @@ my_queue = pe.geQueue(wbs[index])
 ```python
 tasks = pe.getTasks(my_queue)
 ```
+*Is also possible to specify the max amount of retrived tasks:*
+```python
+tasks = pe.getTasks(my_queue, 42)
+```
 *Other example*:
 ```python
 inbox_tasks = pe.getTasks(inbox_queue)
+inbox_tasks = pe.getTasks(inbox_queue, 42)
 ```
 *Listing the amount tasks in a Queue*:
 ```python
@@ -414,3 +419,9 @@ There's a tutorial from IBM using Open CMIS available [here](http://www.ibm.com/
 
 #### Version 1.3.1: 
 - When starting a workflow, now the **"startWorkflow()"** method will raise an exception for errors or return the number for the started Workflow **(Work Object Number - WobNum)**
+
+#### Version 1.3.2: 
+- Added Python 3 compatibility.
+- When updating a step, now is also possible to pass a step object. Before each new updated propertie should be handled.
+- When calling "```python getTasks()```" method, now its possible to inform the max amount of items to be returned.
+- Create a method to retrieve a task by passing the *"Work Object Number"*

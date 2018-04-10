@@ -119,6 +119,7 @@ class PE(object):
         queue = work_basket.json()
         queue['count'] = count
         return queue
+    
     def getQueue(self, work_basket):
         """Returns a Queue for a given Workbasket.
         Usage:
@@ -134,8 +135,7 @@ class PE(object):
         queue['count'] = count
         return queue
 
-    def getAllTasks(self):
-        
+    def getAllTasks(self):        
         """Returns all tasks from all Queues.
         Usage:
         >>> tasks = pe.getAllTasks()
@@ -151,8 +151,7 @@ class PE(object):
                 tasks.append(found_tasks)
         return [tsk for task in tasks for tsk in task]
 
-    def getTasks(self, queue, count=50):
-        
+    def getTasks(self, queue, count=50):        
         """Returns a dictionary with all tasks for the given queue.
         A queue object is required.
         Usage:
@@ -168,14 +167,38 @@ class PE(object):
         else:
             return work_items.json()['queueElements']
 
+    def getTask(self, wobnum, count=None):
+        """Searches all queues for a given Work Object Number. To improve
+        performance, is possible to pass the amount of objects to be returned
+        by each Queue, if the value is not set, it will be set to each Queue's
+        count.        
+        Usage:
+        >>> task = pe.getTask('C170ED9B22D0AD43A74E865FA553EDBD')
+        Passing the total workitems for each queue:
+        >>> task = pe.getTask('C170ED9B22D0AD43A74E865FA553EDBD', 100)
+        """
+        queue_count = count        
+        
+        for queues in self.client.queue_urls:            
+            queue = self.getQueue(queues.split('/')[-1])            
+            count = count if queue_count is not None else queue['count']          
+            tasks = self.getTasks(queue, count)           
+            if tasks:                
+                task = [task for task in tasks
+                        if task['workObjectNumber'] == wobnum]
+                if task:
+                    break                           
+
+        
+        return task[0] if task else task
+
     def getMilestones(self, task):
         milestone = requests.get(self.client.baseurl
                                  + task['milestones'],
                                  auth = self.client.cred)
         return milestone.json()
 
-    def lockTask(self, task):
-        
+    def lockTask(self, task):        
         """Receives a task dictionary, obtainned with getTasks() method,
         and locks the task so other users can't access this task at same time.
         Usage:
@@ -193,8 +216,7 @@ class PE(object):
                                       'If-Match':eTag}
                               )        
 
-    def saveAndUnlockTask(self, task, comment = None):
-        
+    def saveAndUnlockTask(self, task, comment = None):        
         """Receives a task dictionary obtainned with getTasks() or getAllTasks(),
         method, unlocks the task and saves it. Optionally, is possible to pass
         a comment that will be saved whitin the task.
@@ -599,7 +621,7 @@ class PE(object):
         >>> workclass = wb.startWorkflow(wf_name =
         'ICNSequentialDocumentApproval')
 
-        :To Create this Workflow, you'll probably need to providebelow data:
+        :To Create this Workflow, you'll probably need to provide below data:
         :ICN_TeamspaceId
         :ICN_WFDeadlineDate
         :ICN_AllowReassign
@@ -649,7 +671,8 @@ class PE(object):
         
         if len(self.kwargs.keys()) <= 1:
             work_class = self.__showAvailableWorkClassOpt(new_data)
-        new_data = self.__createNewDataForLaunch(new_data)        
+        new_data = self.__createNewDataForLaunch(new_data)
+        
         wobnum = new_data['systemProperties']['workObjectNumber']            
 
         if len(self.kwargs.keys()) > 1:
@@ -726,4 +749,4 @@ class PE(object):
                                 u'desc':u''}                    
                     new_data['attachments'][attachment][
                         'value'] = document
-        return new_data    
+        return new_data

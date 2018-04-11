@@ -13,10 +13,6 @@ This API requires [Requests](https://github.com/kennethreitz/requests) by Kennet
 
 *Note: If using the setup.py script, Requests will be automatically installed*
 
-**Important!!!!**
-
-**- At this point, this API is only working with Python2 version.**
-
 ## Installing the fnetpepAPI:
 Download this package or run:
 ```shell
@@ -102,6 +98,16 @@ tasks = pe.getTasks(my_queue, 42)
 inbox_tasks = pe.getTasks(inbox_queue)
 inbox_tasks = pe.getTasks(inbox_queue, 42)
 ```
+*Get a single task passing a Work Object Number. By doing this the work item will be search all
+over the queues, so it's also possible to pass the max amount of items to be searched within each queue.*
+```python
+my_task = pe.getTask('C170ED9B22D0AD43A74E865FA553EDBD')
+```
+*or*
+```python
+my_task = pe.getTask('C170ED9B22D0AD43A74E865FA553EDBD', 42)
+```
+
 *Listing the amount tasks in a Queue*:
 ```python
 inbox_queue.get('count')
